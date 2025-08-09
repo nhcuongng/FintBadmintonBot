@@ -3,7 +3,7 @@ const JsonDatabase = require('../db');
 class PollController {
     constructor() {
         this.isStopForThisWeek = false;
-        this.chat_id = '';
+        this.chatId = '';
         this.isRunning = false;
         this.chatIdDb = new JsonDatabase();
         
@@ -26,8 +26,8 @@ class PollController {
         }
     }
 
-    setChatId(chat_id) {
-        this.chat_id = chat_id;
+    setChatId(chatId) {
+        this.chatId = chatId;
     }
 
     get isCallable() {
@@ -35,7 +35,7 @@ class PollController {
 
         if (this.isStopForThisWeek) return false;
 
-        return Boolean(this.chat_id);
+        return Boolean(this.chatId);
     }
 
     pause() {
@@ -51,7 +51,7 @@ class PollController {
 
     turnOff() {
         this.isRunning = false;
-        this.chat_id = null;
+        this.chatId = null;
         this.chatIdDb.removeFile();
     }
 
@@ -79,7 +79,7 @@ class PollController {
 
     saveState() {
         const stateData = {
-            chatId: this.chat_id,
+            chatId: this.chatId,
             isRunning: this.isRunning,
             isStopForThisWeek: this.isStopForThisWeek
         };
