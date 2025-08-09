@@ -1,5 +1,5 @@
 const dayjs = require('dayjs');
-const { URL_SEND_MESSAGE, URL_SEND_POLL } = require('../../constant');
+const { URL_SEND_POLL } = require('../../constant');
 const { pollController } = require('../poll-controller');
 
 async function handleSendPoll() {
@@ -26,7 +26,7 @@ async function handleSendPoll() {
                 chat_id: pollController.chat_id,
                 question: `🏸 Anh chị em ơi! Lịch đánh cầu tuần này: ${formattedDate}. Mọi người tham gia nhé!`,
                 options: ['Tham gia chắc chắn luôn! 💪', 'Xin phép bận rồi 😢', 'Có thể tham gia (xác nhận sau) 🤔'],
-                "disable_notification": false,
+                'disable_notification': false,
                 is_anonymous: false
             })
         });

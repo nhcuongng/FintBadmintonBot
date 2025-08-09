@@ -5,8 +5,7 @@ async function handleSendReminder() {
     console.log('Sending reminder on Thursday.', pollController.isCallable);
 
     if (!pollController.isCallable) {
-        // throw new Error('Không thể tạo poll được');
-        return
+        throw new Error('Không thể tạo poll được');
     };
 
     try {
@@ -18,7 +17,7 @@ async function handleSendReminder() {
             },
             body: JSON.stringify({
                 chat_id: pollController.chat_id,
-                text: "Mọi người nhớ chuẩn bị đồ cho ngày mai nhé 🏸",
+                text: 'Mọi người nhớ chuẩn bị đồ cho ngày mai nhé 🏸',
                 disable_notification: false
             })
         });
@@ -31,7 +30,6 @@ async function handleSendReminder() {
         }
     } catch (error) {
         console.error('Không gửi được nhắc nhở:', error);
-        // throw error
     }
 }
 

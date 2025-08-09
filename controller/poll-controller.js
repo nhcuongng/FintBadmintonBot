@@ -35,7 +35,7 @@ class PollController {
 
         if (this.isStopForThisWeek) return false;
 
-        return Boolean(this.chat_id)
+        return Boolean(this.chat_id);
     }
 
     pause() {
@@ -55,8 +55,8 @@ class PollController {
         this.chatIdDb.removeFile();
     }
 
-    async turnOn(chatId) {
-        this.setChatId(chatId)
+    turnOn(chatId) {
+        this.setChatId(chatId);
         this.isRunning = true;
 
         // Save all state to JSON file

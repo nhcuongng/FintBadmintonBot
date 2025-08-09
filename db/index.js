@@ -1,8 +1,7 @@
 const fs = require('fs');
-const path = require('path')
 
 class JsonDatabase {
-    urlPath = './db/chat.json'
+    urlPath = './db/chat.json';
 
     constructor(filePath) {
         if (filePath) {
@@ -11,15 +10,9 @@ class JsonDatabase {
     }
 
     readData() {
-        try {
-            const data = fs.readFileSync(this.urlPath, 'utf8');
-            const jsonData = JSON.parse(data);
-            return jsonData;
-        } catch (err) {
-            // console.error(`Error reading ${this.urlPath}:`, err);
-            // return null;
-            throw err
-        }
+        const data = fs.readFileSync(this.urlPath, 'utf8');
+        const jsonData = JSON.parse(data);
+        return jsonData;
     }
 
     writeData(data) {
