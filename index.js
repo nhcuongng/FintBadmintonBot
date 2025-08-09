@@ -8,7 +8,9 @@ const { handleSendReminder } = require('./controller/reminder');
 require('./bot');
 
 try {
+    // 10h22 thứ tư hàng tuần
     const CRON_EXPRESSION_ON_WEDNESDAY = '22 10 * * 3';
+    // 22h thứ 5 hàng tuần
     const CRON_EXPRESSION_ON_THURSDAY = '0 22 * * 4';
 
     // Chạy vào thứ tư hàng tuần
