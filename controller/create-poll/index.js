@@ -1,14 +1,12 @@
-const cron = require('node-cron');
 const dayjs = require('dayjs');
-require('dotenv').config()
-const { URL_SEND_MESSAGE, URL_SEND_POLL } = require('./constant');
-const { pollManager } = require('./poll-manager');
+const { URL_SEND_MESSAGE, URL_SEND_POLL } = require('../../constant');
+const { pollController } = require('../poll-controller');
 
 async function handleSendPoll() {
     console.log('At 10:22 on Wednesday.');
 
-    if (!pollManager.isCallable) {
-        pollManager.continue();
+    if (!pollController.isCallable) {
+        pollController.continue();
         throw new Error('Không thể tạo poll được');
     };
 
@@ -25,7 +23,7 @@ async function handleSendPoll() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                chat_id: pollManager.chat_id,
+                chat_id: pollController.chat_id,
                 question: `🏸 Anh chị em ơi! Lịch đánh cầu tuần này: ${formattedDate}. Mọi người tham gia nhé!`,
                 options: ['Tham gia chắc chắn luôn! 💪', 'Xin phép bận rồi 😢', 'Có thể tham gia (xác nhận sau) 🤔'],
                 "disable_notification": false,
@@ -44,7 +42,4 @@ async function handleSendPoll() {
     }
 }
 
-const CRON_EXPRESSION_ON_WEDNESDAY = '22 10 * * 3'
-
-// Chạy vào thứ tư hàng tuần
-cron.schedule(CRON_EXPRESSION_ON_WEDNESDAY, handleSendPoll);
+exports.handleSendPoll = handleSendPoll;

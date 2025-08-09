@@ -1,7 +1,7 @@
 const { Telegraf } = require('telegraf')
 const { v4: uuidV4 } = require('uuid')
 const { message } = require('telegraf/filters')
-const { pollManager } = require('./poll-manager')
+const { pollController } = require('./controller/poll-controller')
 const fs = require('fs');
 
 const bot = new Telegraf(process.env.BOT_TOKEN)
@@ -35,8 +35,8 @@ bot.command('help', async (ctx) => {
 })
 
 bot.command('skip', async (ctx) => {
-    pollManager.pause();
-        if (!pollManager.isRunning) {
+    pollController.pause();
+        if (!pollController.isRunning) {
             await ctx.reply('Bot hiện đang bị tắt, chạy /kickoff để khởi động lại Bot', { parse_mode: 'Markdown' })
         } else {
             await ctx.reply('Tuần nghỉ đánh nhé mọi người!')
@@ -44,12 +44,12 @@ bot.command('skip', async (ctx) => {
 })
 
 bot.command('kickoff', async (ctx) => {
-    await pollManager.turnOn(ctx.message.chat.id);
+    await pollController.turnOn(ctx.message.chat.id);
     await ctx.reply('Bot đã được khởi tạo và sẽ tạo poll vào mỗi thứ tư hàng tuần!')
 })
 
 bot.command('stop', async (ctx) => {
-    pollManager.turnOff();
+    pollController.turnOff();
     await ctx.reply('Bot đã tắt, chạy /kickoff để chạy lại Bot!', { parse_mode: 'Markdown' })
 })
 
