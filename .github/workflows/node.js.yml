@@ -29,3 +29,25 @@ jobs:
     - run: npm ci
     - run: npm run lint
     # - run: npm test --if-present
+  deploy:
+    
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x, 22.x]
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - run: npm ci
+    - name: Get SSH Key and set permissions
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secret.SSH_PRIVATE_KEY }}" > ~/.ssh/cuong_github && chmod 600 ~/.ssh/cuong_github
+    - name: Deploy using SCP
+      run: scp -o StrictHostKeyChecking=no -i ~/.ssh/cuong_github -r ./dist/* ${{ secret.SSH_USER }}@${{ secret.SSH_HOST }}:~/node-app
+      
