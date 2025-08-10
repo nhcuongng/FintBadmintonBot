@@ -8,7 +8,7 @@ on:
     branches: [ "feat/ci/release" ]
   pull_request:
     branches: [ "feat/ci/release"]
-
+  
 jobs:
   build:
 
@@ -49,6 +49,6 @@ jobs:
     - name: Get SSH Key and set permissions
       run: |
         mkdir -p ~/.ssh
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/cuong_github && chmod 600 ~/.ssh/cuong_github
+        echo "${{ vars.SSH_PRIVATE_KEY }}" > ~/.ssh/cuong_github && chmod 600 ~/.ssh/cuong_github
     - name: Deploy using SCP
-      run: scp -o StrictHostKeyChecking=no -i ~/.ssh/cuong_github -r ./dist/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/node-app
+      run: scp -o StrictHostKeyChecking=no -i ~/.ssh/cuong_github -r ./dist/* ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:~/node-app
