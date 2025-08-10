@@ -5,9 +5,9 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "feat/ci/release" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "feat/ci/release"]
 
 jobs:
   build:
@@ -44,6 +44,8 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm ci
+    - run: npm i -g @vercel/ncc
+    - run: ncc build index.js -o dist
     - name: Get SSH Key and set permissions
       run: |
         mkdir -p ~/.ssh
