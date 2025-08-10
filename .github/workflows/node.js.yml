@@ -46,9 +46,15 @@ jobs:
     - run: npm ci
     - run: npm i -g @vercel/ncc
     - run: ncc build index.js -o dist
+    - name: Print all environment variables
+      env:
+        MY_ENV_VAR: ${{ secrets.secret }}  # If it's a secret
+        MY_ENV_VAR1: ${{ secrets.SSH_PRIVATE_KEY }}  # If it's a secret
+        ANOTHER_VAR: ${{ vars.ANOTHER_VAR }}   # If it's a variable set in the environment
+    - run: printenv
     - name: Get SSH Key and set permissions
       run: |
         mkdir -p ~/.ssh
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/cuong_github && chmod 600 ~/.ssh/cuong_github
+        echo "${{ secrets.secret.SSH_PRIVATE_KEY }}" > ~/.ssh/cuong_github && chmod 600 ~/.ssh/cuong_github
     - name: Deploy using SCP
-      run: scp -o StrictHostKeyChecking=no -i ~/.ssh/cuong_github -r ./dist/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/node-app
+      run: scp -o StrictHostKeyChecking=no -i ~/.ssh/cuong_github -r ./dist/* ${{ secrets.secret.SSH_USER }}@${{ secrets.secret.SSH_HOST }}:~/node-app
