@@ -6,6 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon --ignore ./db/*.json index.js",
+    "server": "node server.js",
+    "server:dev": "nodemon --ignore ./db/*.json server.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
@@ -15,6 +17,7 @@
   "dependencies": {
     "dayjs": "^1.11.13",
     "dotenv": "^17.2.1",
+    "express": "^4.21.2",
     "jimp": "^1.6.0",
     "node-cron": "^3.0.0",
     "pexels": "^1.4.0",

@@ -6,6 +6,7 @@ const { handleSendReminder } = require('./controller/reminder');
 
 // execute the bot's tasks
 require('./bot');
+require('./server')
 
 try {
     // 10h22 thứ tư hàng tuần
