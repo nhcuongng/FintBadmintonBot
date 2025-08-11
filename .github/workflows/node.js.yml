@@ -70,15 +70,19 @@ jobs:
       run: |
         scp -i ~/.ssh/id_rsa -r ./dist/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/node-app/
         
-    # - name: Restart application
-    #   run: |
-    #     ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ~/node-app && pm2 restart all || node index.js &"
+    - name: Create env file
+      run: |
+        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ~/node-app && touch .env && echo BOT_TOKEN=${{ secrets.BOT_TOKEN }} >> .env && echo ADMIN_USERNAME=${{ secrets.ADMIN_USERNAME }} >> .env"
+  
+    - name: Restart application
+      run: |
+        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ~/node-app && pm2 restart all || node index.js &"
         
-    # - name: Verify deployment
-    #   run: |
-    #     sleep 10
-    #     ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "curl -f http://localhost:3000/health || exit 1"
+    - name: Verify deployment
+      run: |
+        sleep 10
+        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "curl -f http://localhost:3000/health || exit 1"
         
-    # - name: Cleanup SSH
-    #   if: always()
-    #   run: rm -f ~/.ssh/id_rsa
+    - name: Cleanup SSH
+      if: always()
+      run: rm -f ~/.ssh/id_rsa

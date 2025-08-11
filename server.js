@@ -44,6 +44,23 @@ app.get('/remind', async (req, res) => {
     }
 });
 
+app.get('/health', (req, res) => {
+    try {
+        res.status(200).json({ 
+            success: true, 
+            message: 'Server is healthy',
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        console.error('Health check error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Health check failed',
+            error: error.message 
+        });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
