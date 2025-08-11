@@ -72,7 +72,7 @@ jobs:
 
     - name: Create db folder
       run: |
-         ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ~/node-app && mkdir db"
+        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ~/node-app && mkdir -p db"
     
     - name: Create env file
       run: |
