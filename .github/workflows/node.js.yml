@@ -11,36 +11,74 @@ on:
   
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
+    
     - name: Use Node.js 20.x
       uses: actions/setup-node@v4
       with:
         node-version: 20.x
         cache: 'npm'
+        
+    - name: Cache node modules
+      uses: actions/cache@v3
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+          
     - run: npm ci
     - run: npm run lint
     # - run: npm test --if-present
-  deploy:
     
+    - name: Build application
+      run: |
+        npm i -g @vercel/ncc
+        ncc build index.js -o dist
+        
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: dist-files
+        path: dist/
+        retention-days: 1
+
+  deploy:
+    needs: build
     runs-on: ubuntu-latest
+    environment: secret
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/feat/ci/release'
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js 20.x
-      uses: actions/setup-node@v4
+    - name: Download build artifacts
+      uses: actions/download-artifact@v3
       with:
-        node-version: 20.x
-        cache: 'npm'
-    - run: npm ci
-    - run: npm i -g @vercel/ncc
-    - run: ncc build index.js -o dist
-    - name: Get SSH Key and set permissions
+        name: dist-files
+        path: dist/
+        
+    - name: Setup SSH
       run: |
         mkdir -p ~/.ssh
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/cuong_github && chmod 600 ~/.ssh/cuong_github
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+        
     - name: Deploy using SCP
-      run: scp -o StrictHostKeyChecking=no -i ~/.ssh/cuong_github -r ./dist/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/node-app
+      run: |
+        scp -i ~/.ssh/id_rsa -r ./dist/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/node-app/
+        
+    # - name: Restart application
+    #   run: |
+    #     ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ~/node-app && pm2 restart all || node index.js &"
+        
+    # - name: Verify deployment
+    #   run: |
+    #     sleep 10
+    #     ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "curl -f http://localhost:3000/health || exit 1"
+        
+    # - name: Cleanup SSH
+    #   if: always()
+    #   run: rm -f ~/.ssh/id_rsa
