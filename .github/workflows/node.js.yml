@@ -76,11 +76,16 @@ jobs:
     
     - name: Create env file
       run: |
-        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ~/node-app-develop && rm -rf .env && touch .env && echo BOT_TOKEN=${{ secrets.BOT_TOKEN }} >> .env && echo ADMIN_USERNAME=${{ secrets.ADMIN_USERNAME }} >> .env && echo PORT=4001"
+        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ~/node-app-develop && rm -rf .env && touch .env && echo BOT_TOKEN=${{ secrets.BOT_TOKEN }} >> .env && echo ADMIN_USERNAME=${{ secrets.ADMIN_USERNAME }} >> .env && echo PORT=4001 >> .env"
   
     - name: Restart application
       run: |
-        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ~/node-app-develop && pm2 restart develop-app --update-env || node index.js &"
+        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ~/node-app-develop && \
+        if pm2 list --namespace cau-long-bot | grep -q 'develop-app'; then \
+          pm2 restart develop-app --namespace cau-long-bot --update-env; \
+        else \
+          pm2 start index.js --name develop-app --namespace cau-long-bot; \
+        fi"
         
     - name: Verify deployment
       run: |
@@ -129,7 +134,12 @@ jobs:
   
     - name: Restart application
       run: |
-        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ~/node-app && pm2 restart all --update-env || node index.js &"
+        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ~/node-app && \
+        if pm2 list --namespace cau-long-bot | grep -q 'production-app'; then \
+          pm2 restart production-app --namespace cau-long-bot --update-env; \
+        else \
+          pm2 start index.js --name production-app --namespace cau-long-bot; \
+        fi"
         
     - name: Verify deployment
       run: |
