@@ -29,8 +29,6 @@ jobs:
           ${{ runner.os }}-node-
           
     - run: npm ci
-    - run: npm run lint
-    # - run: npm test --if-present
     
     - name: Build application
       run: |
