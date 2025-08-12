@@ -5,7 +5,7 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ "main"]
+    branches: [ "main", "develop"]
   
 jobs:
   build:
@@ -44,11 +44,56 @@ jobs:
         path: dist/
         retention-days: 1
 
-  deploy:
+  deploy-develop:
     needs: build
     runs-on: ubuntu-latest
     environment: secret
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/feat/ci/release'
+    if: github.ref == 'refs/heads/develop'
+
+    steps:
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: dist-files
+        path: dist/
+        
+    - name: Setup SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+        
+    - name: Deploy using SCP
+      run: |
+        scp -i ~/.ssh/id_rsa -r ./dist/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/node-app-develop/
+
+    - name: Create db folder
+      run: |
+        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ~/node-app-develop && mkdir -p db"
+    
+    - name: Create env file
+      run: |
+        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ~/node-app-develop && rm -rf .env && touch .env && echo BOT_TOKEN=${{ secrets.BOT_TOKEN }} >> .env && echo ADMIN_USERNAME=${{ secrets.ADMIN_USERNAME }} >> .env && echo PORT=4001"
+  
+    - name: Restart application
+      run: |
+        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ~/node-app-develop && pm2 restart develop-app --update-env || node index.js &"
+        
+    - name: Verify deployment
+      run: |
+        sleep 10
+        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "curl -f http://localhost:4001/health || exit 1"
+        
+    - name: Cleanup SSH
+      if: always()
+      run: rm -f ~/.ssh/id_rsa
+
+  deploy-production:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: secret
+    if: github.ref == 'refs/heads/main'
 
     steps:
     - name: Download build artifacts
