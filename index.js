@@ -14,11 +14,16 @@ try {
     // 22h thứ 5 hàng tuần
     const CRON_EXPRESSION_ON_THURSDAY = '0 22 * * 4';
 
+
     // Chạy vào thứ tư hàng tuần
-    cron.schedule(CRON_EXPRESSION_ON_WEDNESDAY, handleSendPoll);
+    cron.schedule(CRON_EXPRESSION_ON_WEDNESDAY, handleSendPoll, {
+        timezone: 'Asia/Ho_Chi_Minh'
+    });
 
     // Chạy vào thứ năm hàng tuần lúc 22 giờ chiều
-    cron.schedule(CRON_EXPRESSION_ON_THURSDAY, handleSendReminder);
+    cron.schedule(CRON_EXPRESSION_ON_THURSDAY, handleSendReminder, {
+        timezone: 'Asia/Ho_Chi_Minh'
+    });
 } catch (error) {
     console.error('cron job không thể chạy', error);
 }

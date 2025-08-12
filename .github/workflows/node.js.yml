@@ -5,48 +5,86 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
+    branches: [ "main"]
+  
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x, 22.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
     - uses: actions/checkout@v4
-    - name: Use Node.js ${{ matrix.node-version }}
+    
+    - name: Use Node.js 20.x
       uses: actions/setup-node@v4
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: 20.x
         cache: 'npm'
+        
+    - name: Cache node modules
+      uses: actions/cache@v3
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+          
     - run: npm ci
     - run: npm run lint
     # - run: npm test --if-present
-  deploy:
     
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x, 22.x]
-    steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
+    - name: Build application
+      run: |
+        npm i -g @vercel/ncc
+        ncc build index.js -o dist
+        
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
       with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
-    - name: Get SSH Key and set permissions
+        name: dist-files
+        path: dist/
+        retention-days: 1
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: secret
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/feat/ci/release'
+
+    steps:
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: dist-files
+        path: dist/
+        
+    - name: Setup SSH
       run: |
         mkdir -p ~/.ssh
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/cuong_github && chmod 600 ~/.ssh/cuong_github
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+        
     - name: Deploy using SCP
-      run: scp -o StrictHostKeyChecking=no -i ~/.ssh/cuong_github -r ./dist/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/node-app
+      run: |
+        scp -i ~/.ssh/id_rsa -r ./dist/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/node-app/
+
+    - name: Create db folder
+      run: |
+        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ~/node-app && mkdir -p db"
+    
+    - name: Create env file
+      run: |
+        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ~/node-app && rm -rf .env && touch .env && echo BOT_TOKEN=${{ secrets.BOT_TOKEN }} >> .env && echo ADMIN_USERNAME=${{ secrets.ADMIN_USERNAME }} >> .env"
+  
+    - name: Restart application
+      run: |
+        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ~/node-app && pm2 restart all --update-env || node index.js &"
+        
+    - name: Verify deployment
+      run: |
+        sleep 10
+        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "curl -f http://localhost:4000/health || exit 1"
+        
+    - name: Cleanup SSH
+      if: always()
+      run: rm -f ~/.ssh/id_rsa
