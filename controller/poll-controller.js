@@ -9,29 +9,23 @@ class PollController {
     #chatId;
     #threadId;
     #isRunning;
-    #chatIdDb;
+    chatIdDb;
     #selectedDay;
 
     // the count of the day from selected day
     range = 3;
-
-    dayOfTheWeek = [
-        { text: 'Thứ Hai', callback_data: '1' },
-        { text: 'Thứ Ba', callback_data: '2' },
-        { text: 'Thứ Tư', callback_data: '3' },
-        { text: 'Thứ Năm', callback_data: '4' },
-        { text: 'Thứ Sáu', callback_data: '5' }
-    ];
 
     constructor() {
         this.#isStopForThisWeek = false;
         this.#chatId = '';
         this.#threadId = '';
         this.#isRunning = false;
-        this.#chatIdDb = new JsonDatabase();
-        
+        this.chatIdDb = new JsonDatabase();
+    }
+
+    initDb() {
         try {
-            const jsonData = this.#chatIdDb.readData();
+            const jsonData = this.chatIdDb.readData();
             if (jsonData) {
                 if (jsonData.chatId) {
                     this.setChatId(jsonData.chatId);
@@ -113,7 +107,7 @@ class PollController {
     turnOff() {
         this.#isRunning = false;
         this.#chatId = null;
-        this.#chatIdDb.removeFile();
+        this.chatIdDb.removeFile();
     }
 
     turnOn(chatId, threadId, selectedDay) {
@@ -132,10 +126,10 @@ class PollController {
         };
 
         try {
-            if (!this.#chatIdDb.fileExists()) {
-                this.#chatIdDb.writeData(stateData);
+            if (!this.chatIdDb.fileExists()) {
+                this.chatIdDb.writeData(stateData);
             } else {
-                this.#chatIdDb.updateData(stateData);
+                this.chatIdDb.updateData(stateData);
             }
         } catch (error) {
             throw new Error('Error saving state to file:', error);
@@ -145,7 +139,8 @@ class PollController {
     setupCronJob() {
         const { CRON_EXPRESSION_CREATE_POLL, CRON_EXPRESSION_REMIND } = this.cronExpression;
         const option = {
-            timezone: 'Asia/Ho_Chi_Minh'
+            timezone: 'Asia/Ho_Chi_Minh',
+            noOverlap: true
         };
 
         // Chạy vào thứ tư hàng tuần
@@ -185,10 +180,10 @@ class PollController {
         };
 
         try {
-            if (this.#chatIdDb.fileExists()) {
-                this.#chatIdDb.updateData(stateData);
+            if (this.chatIdDb.fileExists()) {
+                this.chatIdDb.updateData(stateData);
             } else {
-                this.#chatIdDb.writeData(stateData);
+                this.chatIdDb.writeData(stateData);
             }
         } catch (error) {
             console.error('Error saving state:', error);

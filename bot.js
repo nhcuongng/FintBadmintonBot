@@ -1,6 +1,7 @@
 const { Telegraf } = require('telegraf');
 const { pollController } = require('./controller/poll-controller');
 const { chunk, find } = require('lodash');
+const { DAY_OF_THE_WEEK } = require('./constant');
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
@@ -20,6 +21,15 @@ bot.use(async (ctx, next) => {
     } else {
         ctx.isReply = true;
     }
+    const chatId = ctx.callbackQuery?.message?.chat?.id || ctx.message?.chat?.id;
+    const threadId = ctx.callbackQuery?.message?.message_thread_id || ctx.message?.message_thread_id;
+
+    let fileName = chatId;
+    if (threadId) {
+        fileName += `_${threadId}`;
+    }
+    pollController.chatIdDb.setFilePath(fileName);
+    pollController.initDb();
     await next(); // runs next middleware
 });
 
@@ -67,7 +77,7 @@ bot.command('kickoff', async (ctx) => {
 
     await ctx.reply('Bot đã được khởi tạo, hãy chọn một ngày trong tuần để đặt lich định kỳ!', {
         reply_markup: {
-            inline_keyboard: chunk(pollController.dayOfTheWeek, 2)
+            inline_keyboard: chunk(DAY_OF_THE_WEEK, 2)
         }
     });
 });
@@ -95,7 +105,7 @@ bot.on('callback_query', async (ctx) => {
     console.info('cron job was setup!', pollController.cronExpression);
 
     await ctx.telegram.answerCbQuery(ctx.callbackQuery.id,
-        `Lịch cố định đã được đặt vào: ${find(pollController.dayOfTheWeek, { callback_data: ctx.callbackQuery.data })?.text }`    
+        `Lịch cố định đã được đặt vào: ${find(DAY_OF_THE_WEEK, { callback_data: ctx.callbackQuery.data })?.text }`    
     );
 });
 
