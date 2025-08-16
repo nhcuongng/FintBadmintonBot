@@ -1,23 +1,43 @@
 const JsonDatabase = require('../db');
+const cron = require('node-cron');
+
+const { handleSendPoll } = require('../controller/create-poll');
+const { handleSendReminder } = require('../controller/reminder');
 
 class PollController {
+    #isStopForThisWeek;
+    #chatId;
+    #threadId;
+    #isRunning;
+    chatIdDb;
+    #selectedDay;
+
+    // the count of the day from selected day
+    range = 3;
+
     constructor() {
-        this.isStopForThisWeek = false;
-        this.chatId = '';
-        this.isRunning = false;
+        this.#isStopForThisWeek = false;
+        this.#chatId = '';
+        this.#threadId = '';
+        this.#isRunning = false;
         this.chatIdDb = new JsonDatabase();
-        
+    }
+
+    initDb() {
         try {
             const jsonData = this.chatIdDb.readData();
             if (jsonData) {
                 if (jsonData.chatId) {
                     this.setChatId(jsonData.chatId);
                 }
+                if (jsonData.threadId) {
+                    this.#threadId = jsonData.threadId;
+                }
                 if (jsonData.isRunning !== undefined) {
-                    this.isRunning = jsonData.isRunning;
+                    this.#isRunning = jsonData.isRunning;
                 }
                 if (jsonData.isStopForThisWeek !== undefined) {
-                    this.isStopForThisWeek = jsonData.isStopForThisWeek;
+                    this.#isStopForThisWeek = jsonData.isStopForThisWeek;
                 }
             }
         } catch (err) {
@@ -26,44 +46,83 @@ class PollController {
         }
     }
 
+    get paramsBot() {
+        return {
+            message_thread_id: this.#threadId,
+            chat_id: this.#chatId
+        };
+    };
+
+    get cronExpression() {
+        let CRON_EXPRESSION_CREATE_POLL = '';
+        let CRON_EXPRESSION_REMIND = '';
+
+        // Create the poll before the match
+        let dayCreatePoll = this.#selectedDay - this.range;
+
+        // Remind everyone before the match one day
+        let dayRemind = this.#selectedDay - 1;
+
+        if (dayCreatePoll <= 0) {
+            dayCreatePoll = 7 + dayCreatePoll;
+        }
+
+        if (dayRemind <= 0) {
+            dayRemind = 7 + dayRemind;
+        }
+
+        CRON_EXPRESSION_CREATE_POLL = `22 10 * * ${dayCreatePoll}`;
+
+        CRON_EXPRESSION_REMIND = `0 22 * * ${dayRemind}`;
+
+        return {
+            CRON_EXPRESSION_CREATE_POLL,
+            CRON_EXPRESSION_REMIND
+        };
+    }
+
     setChatId(chatId) {
-        this.chatId = chatId;
+        this.#chatId = chatId;
     }
 
     get isCallable() {
-        if (!this.isRunning) return false;
+        if (!this.#isRunning) return false;
 
-        if (this.isStopForThisWeek) return false;
+        if (this.#isStopForThisWeek) return false;
 
-        return Boolean(this.chatId);
+        return Boolean(this.#chatId);
     }
 
     pause() {
-        this.isStopForThisWeek = true;
+        this.#isStopForThisWeek = true;
         this.saveState();
     }
 
     continue() {
-        this.isStopForThisWeek = false;
-        this.isRunning = true;
+        this.#isStopForThisWeek = false;
+        this.#isRunning = true;
         this.saveState();
     }
 
     turnOff() {
-        this.isRunning = false;
-        this.chatId = null;
+        this.#isRunning = false;
+        this.#chatId = null;
         this.chatIdDb.removeFile();
     }
 
-    turnOn(chatId) {
+    turnOn(chatId, threadId, selectedDay) {
         this.setChatId(chatId);
-        this.isRunning = true;
+        this.#threadId = threadId;
+        this.#isRunning = true;
+        this.#selectedDay = selectedDay;
 
         // Save all state to JSON file
-        const stateData = { 
+        const stateData = {
+            selectedDay, 
+            threadId,
             chatId,
-            isRunning: this.isRunning,
-            isStopForThisWeek: this.isStopForThisWeek
+            isRunning: this.#isRunning,
+            isStopForThisWeek: this.#isStopForThisWeek
         };
 
         try {
@@ -77,11 +136,47 @@ class PollController {
         }
     }
 
+    setupCronJob() {
+        const { CRON_EXPRESSION_CREATE_POLL, CRON_EXPRESSION_REMIND } = this.cronExpression;
+        const option = {
+            timezone: 'Asia/Ho_Chi_Minh',
+            noOverlap: true
+        };
+
+        // Chạy vào thứ tư hàng tuần
+        cron.schedule(
+            CRON_EXPRESSION_CREATE_POLL,
+            async () => {
+                if (!this.isCallable) {
+                    pollController.continue();
+                    console.error('Không thể tạo poll được');
+                    return;
+                };
+
+                await handleSendPoll(this.paramsBot,this.range, CRON_EXPRESSION_CREATE_POLL);
+            }
+            , option);
+
+        // Chạy vào thứ năm hàng tuần lúc 22 giờ chiều
+        cron.schedule(
+            CRON_EXPRESSION_REMIND,
+            async () => {
+                if (!pollController.isCallable) {
+                    console.error('Không thể nhắc nhở được');
+                    return;
+                };
+                await handleSendReminder(this.paramsBot);
+            }
+            , option
+        );
+    }
+
     saveState() {
         const stateData = {
-            chatId: this.chatId,
-            isRunning: this.isRunning,
-            isStopForThisWeek: this.isStopForThisWeek
+            chatId: this.#chatId,
+            threadId: this.#threadId,
+            isRunning: this.#isRunning,
+            isStopForThisWeek: this.#isStopForThisWeek
         };
 
         try {
