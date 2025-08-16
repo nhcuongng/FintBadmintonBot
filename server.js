@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const { handleSendPoll } = require('./controller/create-poll');
 const { handleSendReminder } = require('./controller/reminder');
+const { pollController } = require('./controller/poll-controller');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -17,7 +18,7 @@ app.get('/', (req, res) => {
 // Send poll endpoint
 app.get('/send-poll', async (req, res) => {
     try {
-        await handleSendPoll();
+        await handleSendPoll(pollController.paramsBot, pollController.range, pollController.cronExpression.CRON_EXPRESSION_CREATE_POLL);
         res.json({ success: true, message: 'Poll sent successfully!' });
     } catch (error) {
         console.error('Error sending poll:', error);
@@ -32,7 +33,7 @@ app.get('/send-poll', async (req, res) => {
 // Send reminder endpoint
 app.get('/remind', async (req, res) => {
     try {
-        await handleSendReminder();
+        await handleSendReminder(pollController.paramsBot);
         res.json({ success: true, message: 'Reminder sent successfully!' });
     } catch (error) {
         console.error('Error sending reminder:', error);
