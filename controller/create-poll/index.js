@@ -23,7 +23,7 @@ async function handleSendPoll() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                chat_id: pollController.chatId,
+                ...pollController.paramsBot,
                 question: `🏸 Anh chị em ơi! Lịch đánh cầu tuần này: ${formattedDate}. Mọi người tham gia nhé!`,
                 options: ['Tham gia chắc chắn luôn! 💪', 'Xin phép bận rồi 😢', 'Có thể tham gia (xác nhận sau) 🤔'],
                 'disable_notification': false,

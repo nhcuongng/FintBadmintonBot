@@ -62,7 +62,8 @@ bot.command('skip', async (ctx) => {
 bot.command('kickoff', async (ctx) => {
     if (!ctx.isReply) return;
 
-    await pollController.turnOn(ctx.message.chat.id);
+    await pollController.turnOn(ctx.message.chat.id, ctx.message.message_thread_id);
+
     await ctx.reply('Bot đã được khởi tạo và sẽ tạo poll vào mỗi thứ tư hàng tuần!');
 });
 

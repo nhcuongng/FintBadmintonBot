@@ -16,7 +16,7 @@ async function handleSendReminder() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                chat_id: pollController.chatId,
+                ...pollController.paramsBot,
                 text: 'Mọi người nhớ chuẩn bị đồ cho ngày mai nhé 🏸',
                 disable_notification: false
             })
