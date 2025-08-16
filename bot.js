@@ -8,7 +8,6 @@ bot.use(async (ctx, next) => {
     // check quyền
     // nếu trong env có admin thì check
     // nếu ko có bypass hết, nghĩa là ko phân quyền
-    
     const messageInfo = (ctx.message || ctx.callbackQuery)?.from;
     
     if (
@@ -98,66 +97,6 @@ bot.on('callback_query', async (ctx) => {
     await ctx.telegram.answerCbQuery(ctx.callbackQuery.id,
         `Lịch cố định đã được đặt vào: ${find(pollController.dayOfTheWeek, { callback_data: ctx.callbackQuery.data })?.text }`    
     );
-  
-    // Using context shortcut
-    await ctx.answerCbQuery('done');
 });
-
-// bot.on('inline_query', async (ctx) => {
-//     const result = [
-//         {
-//             type: 'article',
-//             id: 'monday',
-//             title: 'Thứ Hai',
-//             input_message_content: {
-//                 message_text: 'Ngày đã chọn: Thứ Hai'
-//             },
-//             description: 'Chọn Thứ Hai'
-//         },
-//         {
-//             type: 'article',
-//             id: 'tuesday',
-//             title: 'Thứ Ba',
-//             input_message_content: {
-//                 message_text: 'Ngày đã chọn: Thứ Ba'
-//             },
-//             description: 'Chọn Thứ Ba'
-//         },
-//         {
-//             type: 'article',
-//             id: 'wednesday',
-//             title: 'Thứ Tư',
-//             input_message_content: {
-//                 message_text: 'Ngày đã chọn: Thứ Tư'
-//             },
-//             description: 'Chọn Thứ Tư'
-//         },
-//         {
-//             type: 'article',
-//             id: 'thursday',
-//             title: 'Thứ Năm',
-//             input_message_content: {
-//                 message_text: 'Ngày đã chọn: Thứ Năm'
-//             },
-//             description: 'Chọn Thứ Năm'
-//         },
-//         {
-//             type: 'article',
-//             id: 'friday',
-//             title: 'Thứ Sáu',
-//             input_message_content: {
-//                 message_text: 'Ngày đã chọn: Thứ Sáu'
-//             },
-//             description: 'Chọn Thứ Sáu'
-//         }
-//     ];
-
-//     // Explicit usage
-//     await ctx.telegram.answerInlineQuery(ctx.inlineQuery.id, result);
-
-  
-//     // Using context shortcut
-//     await ctx.answerInlineQuery(result);
-// });
 
 bot.launch();
