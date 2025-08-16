@@ -18,7 +18,7 @@ app.get('/', (req, res) => {
 // Send poll endpoint
 app.get('/send-poll', async (req, res) => {
     try {
-        await handleSendPoll(pollController.paramsBot, pollController.range);
+        await handleSendPoll(pollController.paramsBot, pollController.range, pollController.cronExpression.CRON_EXPRESSION_CREATE_POLL);
         res.json({ success: true, message: 'Poll sent successfully!' });
     } catch (error) {
         console.error('Error sending poll:', error);

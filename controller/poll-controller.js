@@ -158,7 +158,7 @@ class PollController {
                     return;
                 };
 
-                await handleSendPoll(this.paramsBot, this.range);
+                await handleSendPoll(this.paramsBot,this.range, CRON_EXPRESSION_CREATE_POLL);
             }
             , option);
 

@@ -41,7 +41,7 @@ bot.command('help', async (ctx) => {
 
 💡 **Cách sử dụng:**
 1. Sử dụng /kickoff để bắt đầu
-2. Bot sẽ tự động tạo poll mỗi thứ tư
+2. Bot sẽ tự động tạo poll trước 3 ngày và nhắc nhở mang đồ trước một ngày
 3. Sử dụng /skip nếu muốn nghỉ tuần nào đó
 4. Sử dụng /stop để dừng hoàn toàn
 
