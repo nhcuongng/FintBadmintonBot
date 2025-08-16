@@ -1,18 +1,10 @@
 const dayjs = require('dayjs');
 const { URL_SEND_POLL } = require('../../constant');
-const { pollController } = require('../poll-controller');
 
-async function handleSendPoll() {
-    console.log('At 10:22 on Wednesday.');
-
-    if (!pollController.isCallable) {
-        pollController.continue();
-        throw new Error('Không thể tạo poll được');
-    };
-
+async function handleSendPoll(params, range) {
     const urlSendPoll = URL_SEND_POLL;
     // First, let's format the date in Vietnamese style
-    const nextPlayDate = dayjs().add(2, 'day');
+    const nextPlayDate = dayjs().add(range, 'day');
     const formattedDate = `${nextPlayDate.format('DD/MM/YYYY')} (${nextPlayDate.day() === 0 ? 'Chủ Nhật' : `Thứ ${nextPlayDate.day() + 1}`})`;
 
     try {
@@ -23,7 +15,7 @@ async function handleSendPoll() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                ...pollController.paramsBot,
+                ...params,
                 question: `🏸 Anh chị em ơi! Lịch đánh cầu tuần này: ${formattedDate}. Mọi người tham gia nhé!`,
                 options: ['Tham gia chắc chắn luôn! 💪', 'Xin phép bận rồi 😢', 'Có thể tham gia (xác nhận sau) 🤔'],
                 'disable_notification': false,

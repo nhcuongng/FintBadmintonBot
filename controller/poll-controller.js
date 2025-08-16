@@ -1,4 +1,8 @@
 const JsonDatabase = require('../db');
+const cron = require('node-cron');
+
+const { handleSendPoll } = require('../controller/create-poll');
+const { handleSendReminder } = require('../controller/reminder');
 
 class PollController {
     #isStopForThisWeek;
@@ -6,6 +10,18 @@ class PollController {
     #threadId;
     #isRunning;
     #chatIdDb;
+    #selectedDay;
+
+    // the count of the day from selected day
+    range = 3;
+
+    dayOfTheWeek = [
+        { text: 'Thứ Hai', callback_data: '1' },
+        { text: 'Thứ Ba', callback_data: '2' },
+        { text: 'Thứ Tư', callback_data: '3' },
+        { text: 'Thứ Năm', callback_data: '4' },
+        { text: 'Thứ Sáu', callback_data: '5' }
+    ];
 
     constructor() {
         this.#isStopForThisWeek = false;
@@ -43,6 +59,34 @@ class PollController {
         };
     };
 
+    get cronExpression() {
+        let CRON_EXPRESSION_CREATE_POLL = '';
+        let CRON_EXPRESSION_REMIND = '';
+
+        // Create the poll before the match
+        let dayCreatePoll = this.#selectedDay - this.range;
+
+        // Remind everyone before the match one day
+        let dayRemind = this.#selectedDay - 1;
+
+        if (dayCreatePoll <= 0) {
+            dayCreatePoll = 7 + dayCreatePoll;
+        }
+
+        if (dayRemind <= 0) {
+            dayRemind = 7 + dayRemind;
+        }
+
+        CRON_EXPRESSION_CREATE_POLL = `22 10 * * ${dayCreatePoll}`;
+
+        CRON_EXPRESSION_REMIND = `0 22 * * ${dayRemind}`;
+
+        return {
+            CRON_EXPRESSION_CREATE_POLL,
+            CRON_EXPRESSION_REMIND
+        };
+    }
+
     setChatId(chatId) {
         this.#chatId = chatId;
     }
@@ -72,13 +116,15 @@ class PollController {
         this.#chatIdDb.removeFile();
     }
 
-    turnOn(chatId, threadId) {
+    turnOn(chatId, threadId, selectedDay) {
         this.setChatId(chatId);
         this.#threadId = threadId;
         this.#isRunning = true;
+        this.#selectedDay = selectedDay;
 
         // Save all state to JSON file
-        const stateData = { 
+        const stateData = {
+            selectedDay, 
             threadId,
             chatId,
             isRunning: this.#isRunning,
@@ -94,6 +140,40 @@ class PollController {
         } catch (error) {
             throw new Error('Error saving state to file:', error);
         }
+    }
+
+    setupCronJob() {
+        const { CRON_EXPRESSION_CREATE_POLL, CRON_EXPRESSION_REMIND } = this.cronExpression;
+        const option = {
+            timezone: 'Asia/Ho_Chi_Minh'
+        };
+
+        // Chạy vào thứ tư hàng tuần
+        cron.schedule(
+            CRON_EXPRESSION_CREATE_POLL,
+            async () => {
+                if (!this.isCallable) {
+                    pollController.continue();
+                    console.error('Không thể tạo poll được');
+                    return;
+                };
+
+                await handleSendPoll(this.paramsBot, this.range);
+            }
+            , option);
+
+        // Chạy vào thứ năm hàng tuần lúc 22 giờ chiều
+        cron.schedule(
+            CRON_EXPRESSION_REMIND,
+            async () => {
+                if (!pollController.isCallable) {
+                    console.error('Không thể nhắc nhở được');
+                    return;
+                };
+                await handleSendReminder(this.paramsBot);
+            }
+            , option
+        );
     }
 
     saveState() {
