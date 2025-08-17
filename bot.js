@@ -102,8 +102,6 @@ bot.on('callback_query', async (ctx) => {
     // setup cron job base on selected day
     pollController.setupCronJob();
 
-    console.info('cron job was setup!', pollController.cronExpression);
-
     await ctx.telegram.answerCbQuery(ctx.callbackQuery.id,
         `Lịch cố định đã được đặt vào: ${find(DAY_OF_THE_WEEK, { callback_data: ctx.callbackQuery.data })?.text }`    
     );

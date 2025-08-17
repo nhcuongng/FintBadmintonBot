@@ -15,6 +15,33 @@ app.get('/', (req, res) => {
     res.json({ message: 'Cau Long Bot Server is running! 🏸' });
 });
 
+app.get('/restart-cron', (req, res) => {
+    try {
+        const result = pollController.restartAllCronJobs();
+        
+        if (result.success) {
+            res.json({
+                success: true,
+                message: result.message,
+                results: result.results
+            });
+        } else {
+            res.status(500).json({
+                success: false,
+                message: result.message,
+                error: result.error
+            });
+        }
+    } catch (error) {
+        console.error('Error in restart-cron endpoint:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to restart cron jobs',
+            error: error.message
+        });
+    }
+});
+
 // Send poll endpoint
 app.get('/send-poll', async (req, res) => {
     try {
