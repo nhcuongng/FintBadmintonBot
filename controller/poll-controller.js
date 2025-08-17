@@ -1,5 +1,6 @@
 const JsonDatabase = require('../db');
 const cron = require('node-cron');
+const { isFunction, get } = require('lodash');
 
 const { handleSendPoll } = require('../controller/create-poll');
 const { handleSendReminder } = require('../controller/reminder');
@@ -14,6 +15,7 @@ class PollController {
 
     // the count of the day from selected day
     range = 3;
+    cronTasks = {};
 
     constructor() {
         this.#isStopForThisWeek = false;
@@ -136,15 +138,44 @@ class PollController {
         }
     }
 
+    cleanPrevCronJob() {
+        Object.keys(this.cronTasks).forEach((key) => {
+            const threadIdInCron = get(key.split('_'), 0, '');
+            const expressionInCron = get(key.split('_'), 1, '');
+            if (Number(threadIdInCron) === this.#threadId) {
+                if (isFunction(this.cronTasks?.[key]?.stop)) {
+                    this.cronTasks?.[key]?.stop();
+                    delete this.cronTasks?.[key];
+                    console.info('clean the job', expressionInCron, 'for', threadIdInCron);
+                }
+            }
+            
+        });
+    }
+
+    /**
+     * 
+     * @param {*} cronExpression 
+     * @returns name for cron job
+     */
+    getCronName(cronExpression) {
+        const prefix = this.#threadId || this.#chatId;
+        return `${prefix}_${cronExpression}`;
+    }
+
     setupCronJob() {
-        const { CRON_EXPRESSION_CREATE_POLL, CRON_EXPRESSION_REMIND } = this.cronExpression;
+        this.cleanPrevCronJob();
+
+        const {
+            CRON_EXPRESSION_CREATE_POLL,
+            CRON_EXPRESSION_REMIND
+        } = this.cronExpression;
         const option = {
             timezone: 'Asia/Ho_Chi_Minh',
             noOverlap: true
         };
 
-        // Chạy vào thứ tư hàng tuần
-        cron.schedule(
+        this.cronTasks[this.getCronName(CRON_EXPRESSION_CREATE_POLL)] = cron.schedule(
             CRON_EXPRESSION_CREATE_POLL,
             async () => {
                 if (!this.isCallable) {
@@ -154,11 +185,11 @@ class PollController {
                 };
 
                 await handleSendPoll(this.paramsBot,this.range, CRON_EXPRESSION_CREATE_POLL);
-            }
-            , option);
+            },
+            option
+        );
 
-        // Chạy vào thứ năm hàng tuần lúc 22 giờ chiều
-        cron.schedule(
+        this.cronTasks[this.getCronName(CRON_EXPRESSION_REMIND)] = cron.schedule(
             CRON_EXPRESSION_REMIND,
             async () => {
                 if (!pollController.isCallable) {
@@ -166,8 +197,8 @@ class PollController {
                     return;
                 };
                 await handleSendReminder(this.paramsBot);
-            }
-            , option
+            },
+            option
         );
     }
 

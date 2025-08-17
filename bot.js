@@ -6,11 +6,11 @@ const { DAY_OF_THE_WEEK } = require('./constant');
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
 bot.use(async (ctx, next) => {
+    const messageInfo = (ctx.message || ctx.callbackQuery)?.from;
+    
     // check quyền
     // nếu trong env có admin thì check
     // nếu ko có bypass hết, nghĩa là ko phân quyền
-    const messageInfo = (ctx.message || ctx.callbackQuery)?.from;
-    
     if (
         process.env.ADMIN_USERNAME &&
         messageInfo?.username !== process.env.ADMIN_USERNAME
