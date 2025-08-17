@@ -6,6 +6,9 @@ name: Node.js CI
 on:
   push:
     branches: [ "main", "develop"]
+
+env:
+  PM2_NAMESPACE: cau-long-bot
   
 jobs:
   build:
@@ -47,6 +50,12 @@ jobs:
     runs-on: ubuntu-latest
     environment: secret
     if: github.ref == 'refs/heads/develop'
+    
+    env:
+      DEPLOY_DIR: ~/node-app-develop
+      APP_NAME: develop-app
+      PORT: 4001
+      BOT_TOKEN: ${{ secrets.BOT_TOKEN_DEV }}
 
     steps:
     - name: Download build artifacts
@@ -54,44 +63,46 @@ jobs:
       with:
         name: dist-files
         path: dist/
-        
+
     - name: Setup SSH
       run: |
         mkdir -p ~/.ssh
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
-        
-    - name: Create deployment directory
-      run: |
-        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "mkdir -p ~/node-app-develop"
-        
-    - name: Deploy using SCP
-      run: |
-        scp -i ~/.ssh/id_rsa -r ./dist/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/node-app-develop/
 
-    - name: Create db folder
+    - name: Deploy application
       run: |
-        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ~/node-app-develop && mkdir -p db"
-    
-    - name: Create env file
+        # Create deployment directory and deploy files
+        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "mkdir -p ${{ env.DEPLOY_DIR }}"
+        scp -i ~/.ssh/id_rsa -r ./dist/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ env.DEPLOY_DIR }}/
+
+    - name: Setup environment
       run: |
-        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ~/node-app-develop && rm -rf .env && touch .env && echo BOT_TOKEN=${{ secrets.BOT_TOKEN }} >> .env && echo ADMIN_USERNAME=${{ secrets.ADMIN_USERNAME }} >> .env && echo PORT=4001 >> .env"
-  
-    - name: Restart application
+        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
+          cd ${{ env.DEPLOY_DIR }} && \
+          mkdir -p db && \
+          cat > .env << EOF
+        BOT_TOKEN=${{ env.BOT_TOKEN }}
+        ADMIN_USERNAME=${{ secrets.ADMIN_USERNAME }}
+        PORT=${{ env.PORT }}
+        EOF"
+
+    - name: Start/Restart PM2 application
       run: |
-        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ~/node-app-develop && \
-        if pm2 list --namespace cau-long-bot | grep -q 'develop-app'; then \
-          pm2 restart develop-app --namespace cau-long-bot --update-env; \
-        else \
-          pm2 start index.js --name develop-app --namespace cau-long-bot; \
-        fi"
-        
+        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
+          cd ${{ env.DEPLOY_DIR }} && \
+          if pm2 list --namespace ${{ env.PM2_NAMESPACE }} | grep -q '${{ env.APP_NAME }}'; then
+            pm2 restart ${{ env.APP_NAME }} --namespace ${{ env.PM2_NAMESPACE }} --update-env
+          else
+            pm2 start index.js --name ${{ env.APP_NAME }} --namespace ${{ env.PM2_NAMESPACE }}
+          fi"
+
     - name: Verify deployment
       run: |
         sleep 10
-        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "curl -f http://localhost:4001/health || exit 1"
-        
+        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "curl -f http://localhost:${{ env.PORT }}/health || exit 1"
+
     - name: Cleanup SSH
       if: always()
       run: rm -f ~/.ssh/id_rsa
@@ -101,6 +112,12 @@ jobs:
     runs-on: ubuntu-latest
     environment: secret
     if: github.ref == 'refs/heads/main'
+    
+    env:
+      DEPLOY_DIR: ~/node-app
+      APP_NAME: production-app
+      PORT: 4000
+      BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
 
     steps:
     - name: Download build artifacts
@@ -108,44 +125,45 @@ jobs:
       with:
         name: dist-files
         path: dist/
-        
+
     - name: Setup SSH
       run: |
         mkdir -p ~/.ssh
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
-        
-    - name: Create deployment directory
-      run: |
-        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "mkdir -p ~/node-app"
-        
-    - name: Deploy using SCP
-      run: |
-        scp -i ~/.ssh/id_rsa -r ./dist/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/node-app/
 
-    - name: Create db folder
+    - name: Deploy application
       run: |
-        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ~/node-app && mkdir -p db"
-    
-    - name: Create env file
+        # Create deployment directory and deploy files
+        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "mkdir -p ${{ env.DEPLOY_DIR }}"
+        scp -i ~/.ssh/id_rsa -r ./dist/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ env.DEPLOY_DIR }}/
+
+    - name: Setup environment
       run: |
-        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ~/node-app && rm -rf .env && touch .env && echo BOT_TOKEN=${{ secrets.BOT_TOKEN }} >> .env && echo ADMIN_USERNAME=${{ secrets.ADMIN_USERNAME }} >> .env"
-  
-    - name: Restart application
+        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
+          cd ${{ env.DEPLOY_DIR }} && \
+          mkdir -p db && \
+          cat > .env << EOF
+        BOT_TOKEN=${{ env.BOT_TOKEN }}
+        ADMIN_USERNAME=${{ secrets.ADMIN_USERNAME }}
+        EOF"
+
+    - name: Start/Restart PM2 application
       run: |
-        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ~/node-app && \
-        if pm2 list --namespace cau-long-bot | grep -q 'production-app'; then \
-          pm2 restart production-app --namespace cau-long-bot --update-env; \
-        else \
-          pm2 start index.js --name production-app --namespace cau-long-bot; \
-        fi"
-        
+        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
+          cd ${{ env.DEPLOY_DIR }} && \
+          if pm2 list --namespace ${{ env.PM2_NAMESPACE }} | grep -q '${{ env.APP_NAME }}'; then
+            pm2 restart ${{ env.APP_NAME }} --namespace ${{ env.PM2_NAMESPACE }} --update-env
+          else
+            pm2 start index.js --name ${{ env.APP_NAME }} --namespace ${{ env.PM2_NAMESPACE }}
+          fi"
+
     - name: Verify deployment
       run: |
         sleep 10
-        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "curl -f http://localhost:4000/health || exit 1"
-        
+        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "curl -f http://localhost:${{ env.PORT }}/health || exit 1"
+
     - name: Cleanup SSH
       if: always()
       run: rm -f ~/.ssh/id_rsa
