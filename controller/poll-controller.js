@@ -11,7 +11,7 @@ class PollController {
     #threadId;
     #isRunning;
     chatIdDb;
-    #selectedDay;
+    selectedDay;
 
     // the count of the day from selected day
     range = 3;
@@ -35,6 +35,9 @@ class PollController {
                 if (jsonData.threadId) {
                     this.#threadId = jsonData.threadId;
                 }
+                if (jsonData.selectedDay) {
+                    this.selectedDay = jsonData.selectedDay;
+                }
                 if (jsonData.isRunning !== undefined) {
                     this.#isRunning = jsonData.isRunning;
                 }
@@ -56,7 +59,7 @@ class PollController {
     };
 
     get cronExpression() {
-        return this.calculateCronExpressions(this.#selectedDay);
+        return this.calculateCronExpressions(this.selectedDay);
     }
 
     /**
@@ -121,7 +124,7 @@ class PollController {
         this.setChatId(chatId);
         this.#threadId = threadId;
         this.#isRunning = true;
-        this.#selectedDay = selectedDay;
+        this.selectedDay = selectedDay;
 
         // Save all state to JSON file
         const stateData = {
@@ -173,7 +176,7 @@ class PollController {
         const config = {
             chatId: this.#chatId,
             threadId: this.#threadId,
-            selectedDay: this.#selectedDay,
+            selectedDay: this.selectedDay,
             isRunning: this.#isRunning,
             isStopForThisWeek: this.#isStopForThisWeek
         };
@@ -196,92 +199,6 @@ class PollController {
             }
         } catch (error) {
             console.error('Error saving state:', error);
-        }
-    }
-
-    /**
-     * Read all JSON files and restart cron jobs for all configurations
-     */
-    restartAllCronJobs() {
-        try {
-            // Clean all existing cron jobs first
-            Object.keys(this.cronTasks).forEach((key) => {
-                if (isFunction(this.cronTasks?.[key]?.stop)) {
-                    this.cronTasks?.[key]?.stop();
-                    delete this.cronTasks?.[key];
-                    console.info('Stopped cron job:', key);
-                }
-            });
-
-            // Read all JSON data from database
-            const allData = this.chatIdDb.readAllData();
-            
-            if (!allData || Object.keys(allData).length === 0) {
-                console.log('No data found to restart cron jobs');
-                return { success: false, message: 'No configurations found' };
-            }
-
-            let restarted = 0;
-            const results = [];
-
-            // Process each configuration
-            Object.entries(allData).forEach(([key, data]) => {
-                try {
-                    if (data && data.chatId && data.selectedDay && data.isRunning) {
-                        // Temporarily set up this configuration
-                        const originalChatId = this.#chatId;
-                        const originalThreadId = this.#threadId;
-                        const originalSelectedDay = this.#selectedDay;
-                        const originalIsRunning = this.#isRunning;
-                        const originalIsStopForThisWeek = this.#isStopForThisWeek;
-
-                        // Set configuration for this instance
-                        this.#chatId = data.chatId;
-                        this.#threadId = data.threadId;
-                        this.#selectedDay = data.selectedDay;
-                        this.#isRunning = data.isRunning;
-                        this.#isStopForThisWeek = data.isStopForThisWeek || false;
-
-                        // Setup cron jobs for this configuration
-                        this.setupCronJobForConfig(data);
-                        
-                        restarted++;
-                        results.push({
-                            chatId: data.chatId,
-                            threadId: data.threadId,
-                            status: 'restarted'
-                        });
-
-                        // Restore original configuration
-                        this.#chatId = originalChatId;
-                        this.#threadId = originalThreadId;
-                        this.#selectedDay = originalSelectedDay;
-                        this.#isRunning = originalIsRunning;
-                        this.#isStopForThisWeek = originalIsStopForThisWeek;
-                    }
-                } catch (error) {
-                    console.error(`Error restarting cron for ${key}:`, error);
-                    results.push({
-                        key,
-                        status: 'error',
-                        error: error.message
-                    });
-                }
-            });
-
-            return {
-                success: true,
-                message: `Restarted ${restarted} cron job(s)`,
-                results
-            };
-
-        } catch (error) {
-            console.error('Error restarting all cron jobs:', error);
-            return {
-                success: false,
-                message: 'Failed to restart cron jobs',
-                error: error.message
-            };
         }
     }
 
@@ -342,6 +259,4 @@ class PollController {
     }
 }
 
-const pollController = new PollController();
-
-exports.pollController = pollController;
+exports.PollController = PollController;
