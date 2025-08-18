@@ -103,6 +103,10 @@ jobs:
         sleep 10
         ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "curl -f http://localhost:${{ env.PORT }}/health || exit 1"
 
+    - name: Restart cron job
+      run: |
+        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "curl -f http://localhost:${{ env.PORT }}/restart-cron || exit 1"
+
     - name: Cleanup SSH
       if: always()
       run: rm -f ~/.ssh/id_rsa
@@ -163,6 +167,10 @@ jobs:
       run: |
         sleep 10
         ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "curl -f http://localhost:${{ env.PORT }}/health || exit 1"
+
+    - name: Restart cron job
+      run: |
+        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "curl -f http://localhost:${{ env.PORT }}/restart-cron || exit 1"
 
     - name: Cleanup SSH
       if: always()

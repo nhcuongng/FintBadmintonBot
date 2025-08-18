@@ -1,2 +1,4 @@
 - improve topic save in db
-- improve server test
+- improve server test:
+  - restart all cron job when deploy new one
+  - run poll manager (cron execute) for testing alternative use direction function
