@@ -14,7 +14,7 @@ class PollController {
     selectedDay;
 
     // the count of the day from selected day
-    range = 3;
+    range = 2;
     cronTasks = {};
 
     constructor() {
@@ -100,7 +100,12 @@ class PollController {
      */
     isCallableForConfig(config) {
         const { isRunning, isStopForThisWeek, chatId } = config;
-        return isRunning && !isStopForThisWeek && Boolean(chatId);
+
+        if (!isRunning) return false;
+
+        if (isStopForThisWeek) return false;
+
+        return Boolean(chatId);
     }
 
     pause() {
@@ -234,7 +239,8 @@ class PollController {
         this.cronTasks[pollCronName] = cron.schedule(
             CRON_EXPRESSION_CREATE_POLL,
             async () => {
-                if (!this.isCallableForConfig(config)) {
+                const jsonData = this.chatIdDb.readData();
+                if (!this.isCallableForConfig(jsonData)) {
                     console.error('Không thể tạo poll được cho', chatId);
                     return;
                 }
@@ -246,7 +252,8 @@ class PollController {
         this.cronTasks[reminderCronName] = cron.schedule(
             CRON_EXPRESSION_REMIND,
             async () => {
-                if (!this.isCallableForConfig(config)) {
+                const jsonData = this.chatIdDb.readData();
+                if (!this.isCallableForConfig(jsonData)) {
                     console.error('Không thể nhắc nhở được cho', chatId);
                     return;
                 }
