@@ -21,7 +21,6 @@ bot.use(async (ctx, next) => {
     } else {
         ctx.isReply = true;
     }
-
     await next(); // runs next middleware
 });
 
