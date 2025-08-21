@@ -1,6 +1,6 @@
 const { Telegraf } = require('telegraf');
-const { pollController } = require('./controller/poll-controller');
 const { chunk, find } = require('lodash');
+const { gateway } = require('./controller/gateway');
 const { DAY_OF_THE_WEEK } = require('./constant');
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
@@ -21,15 +21,6 @@ bot.use(async (ctx, next) => {
     } else {
         ctx.isReply = true;
     }
-    const chatId = ctx.callbackQuery?.message?.chat?.id || ctx.message?.chat?.id;
-    const threadId = ctx.callbackQuery?.message?.message_thread_id || ctx.message?.message_thread_id;
-
-    let fileName = chatId;
-    if (threadId) {
-        fileName += `_${threadId}`;
-    }
-    pollController.chatIdDb.setFilePath(fileName);
-    pollController.initDb();
     await next(); // runs next middleware
 });
 
@@ -64,8 +55,8 @@ bot.command('help', async (ctx) => {
 bot.command('skip', async (ctx) => {
     if (!ctx.isReply) return;
 
-    pollController.pause();
-    if (!pollController.isRunning) {
+    gateway.getPollController(ctx).pause();
+    if (!gateway.getPollController(ctx).isRunning) {
         await ctx.reply('Bot hiện đang bị tắt, chạy /kickoff để khởi động lại Bot', { parse_mode: 'Markdown' });
     } else {
         await ctx.reply('Tuần nghỉ đánh nhé mọi người!');
@@ -85,7 +76,7 @@ bot.command('kickoff', async (ctx) => {
 bot.command('stop', async (ctx) => {
     if (!ctx.isReply) return;
 
-    pollController.turnOff();
+    gateway.getPollController(ctx).turnOff();
     await ctx.reply('Bot đã tắt, chạy /kickoff để chạy lại Bot!', { parse_mode: 'Markdown' });
 });
 
@@ -93,16 +84,14 @@ bot.on('callback_query', async (ctx) => {
     if (!ctx.isReply) return;
 
     // Init the poll controller
-    await pollController.turnOn(
+    await gateway.getPollController(ctx).turnOn(
         ctx.callbackQuery.message.chat.id,
         ctx.callbackQuery.message.message_thread_id,
-        ctx.callbackQuery.data
+        Number(ctx.callbackQuery.data)
     );
 
     // setup cron job base on selected day
-    pollController.setupCronJob();
-
-    console.info('cron job was setup!', pollController.cronExpression);
+    gateway.getPollController(ctx).setupCronJob();
 
     await ctx.telegram.answerCbQuery(ctx.callbackQuery.id,
         `Lịch cố định đã được đặt vào: ${find(DAY_OF_THE_WEEK, { callback_data: ctx.callbackQuery.data })?.text }`    

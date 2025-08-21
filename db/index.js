@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 
 class JsonDatabase {
     #urlPath = './db/chat.json';
@@ -62,6 +63,37 @@ class JsonDatabase {
 
     fileExists() {
         return fs.existsSync(this.#urlPath);
+    }
+
+    readAllData() {
+        try {
+            const dbDir = path.dirname(this.#urlPath);
+            
+            if (!fs.existsSync(dbDir)) {
+                return {};
+            }
+
+            const files = fs.readdirSync(dbDir);
+            const jsonFiles = files.filter(file => file.endsWith('.json'));
+            const allData = {};
+
+            jsonFiles.forEach(file => {
+                try {
+                    const filePath = path.join(dbDir, file);
+                    const data = fs.readFileSync(filePath, 'utf8');
+                    const jsonData = JSON.parse(data);
+                    const fileName = path.basename(file, '.json');
+                    allData[fileName] = jsonData;
+                } catch (error) {
+                    console.error(`Error reading file ${file}:`, error);
+                }
+            });
+
+            return allData;
+        } catch (error) {
+            console.error('Error reading all data:', error);
+            return {};
+        }
     }
 }
 
