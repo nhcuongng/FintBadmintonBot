@@ -1,3 +1,22 @@
+# [1.1.0](https://github.com/nhcuongng/FintBadmintonBot/compare/v1.0.0...v1.1.0) (2025-08-23)
+
+
+### Bug Fixes
+
+* **bot:** change bot token dev and compact workflow ([57e4de4](https://github.com/nhcuongng/FintBadmintonBot/commit/57e4de40a0c26f84342e7219a4f1e9366a7defb5))
+* **bot:** change bot token dev and compact workflow ([09f1caa](https://github.com/nhcuongng/FintBadmintonBot/commit/09f1caa122547d627c67cc288e948a34b0be06b3))
+* **bot:** check bot can execute cron job by json file ([d07a8ca](https://github.com/nhcuongng/FintBadmintonBot/commit/d07a8ca74325e11cce82a8426bf85e1a8c5cdc7b))
+* **ci:** make work folder when does not exist ([9431ef5](https://github.com/nhcuongng/FintBadmintonBot/commit/9431ef5b18f98a6bcb3a37dfb316b5598de75a1a))
+* **cron:** cleanup previous cron job when select new day ([2dd73c1](https://github.com/nhcuongng/FintBadmintonBot/commit/2dd73c1da32a1c53e1fc9a0d4ee7e154ca21d10c))
+
+
+### Features
+
+* **cron:** restart cron when deploy ([62f3ecd](https://github.com/nhcuongng/FintBadmintonBot/commit/62f3ecda81836c4d77a1a43248adc044b6811aad))
+* **gateway:** not use poll controller only, use gateway alternatively ([75323f2](https://github.com/nhcuongng/FintBadmintonBot/commit/75323f2a5560c1d051b142191fccaada1c2aee34))
+* **semver:** add semver release package ([95a7157](https://github.com/nhcuongng/FintBadmintonBot/commit/95a71577f60d943fd95df22c58f741ac0bf00f15))
+* **topic:** support topic of supergroup ([8c7ad46](https://github.com/nhcuongng/FintBadmintonBot/commit/8c7ad462457d05f47d23de940cb49a9d20e26159))
+
 # 1.0.0 (2025-08-17)
 
 
