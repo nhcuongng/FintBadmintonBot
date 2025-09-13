@@ -16,7 +16,7 @@ bot.use(async (ctx, next) => {
         messageInfo?.username !== process.env.ADMIN_USERNAME
         && messageInfo?.text !== '/help'
     ) {
-        ctx.reply(`Bạn không có quyền tương tác với Bot hãy, liên hệ quản trị viên của bạn: @${process.env.ADMIN_USERNAME}`);
+        // ctx.reply(`Bạn không có quyền tương tác với Bot hãy, liên hệ quản trị viên của bạn: @${process.env.ADMIN_USERNAME}`);
         ctx.isReply = false;
     } else {
         ctx.isReply = true;
@@ -35,14 +35,14 @@ bot.command('help', async (ctx) => {
 
 📋 **Các lệnh có sẵn:**
 
-/kickoff - Khởi động bot và tạo poll tự động mỗi thứ tư
+/kickoff - Khởi động bot và tạo poll tự động theo lựa chọn
 /skip - Tạm dừng poll cho tuần này (nghỉ đánh)
 /stop - Tắt bot và dừng tất cả poll tự động
 /help - Hiển thị hướng dẫn này
 
 💡 **Cách sử dụng:**
 1. Sử dụng /kickoff để bắt đầu
-2. Bot sẽ tự động tạo poll trước 3 ngày và nhắc nhở mang đồ trước một ngày
+2. Bot sẽ tự động tạo poll trước 2 ngày và nhắc nhở mang đồ trước một ngày
 3. Sử dụng /skip nếu muốn nghỉ tuần nào đó
 4. Sử dụng /stop để dừng hoàn toàn
 
@@ -81,7 +81,12 @@ bot.command('stop', async (ctx) => {
 });
 
 bot.on('callback_query', async (ctx) => {
-    if (!ctx.isReply) return;
+    if (!ctx.isReply) {
+        await ctx.answerCbQuery(`Bạn không có quyền tương tác với Bot hãy, liên hệ quản trị viên của bạn: @${process.env.ADMIN_USERNAME}`, {
+            show_alert: true
+        });
+        return;
+    };
 
     // Init the poll controller
     await gateway.getPollController(ctx).turnOn(
