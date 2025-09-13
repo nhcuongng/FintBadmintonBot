@@ -10,9 +10,10 @@ class PollController {
     #isStopForThisWeek;
     #chatId;
     #threadId;
-    #isRunning;
+    isRunning;
     chatIdDb;
     selectedDay;
+    chatTitle;
 
 
     // the count of the day from selected day
@@ -23,8 +24,16 @@ class PollController {
         this.#isStopForThisWeek = false;
         this.#chatId = '';
         this.#threadId = '';
-        this.#isRunning = false;
+        this.isRunning = false;
         this.chatIdDb = new JsonDatabase();
+    }
+
+    get badmintonFieldName() {
+        if (this.selectedDay === 7) {
+            return 'Sân Chủ Nhật';
+        }
+
+        return `Sân thứ ${this.selectedDay + 1}`;
     }
 
     initDb() {
@@ -40,8 +49,11 @@ class PollController {
                 if (jsonData.selectedDay) {
                     this.selectedDay = jsonData.selectedDay;
                 }
+                if (jsonData.chatTitle) {
+                    this.chatTitle = jsonData.chatTitle;
+                }
                 if (jsonData.isRunning !== undefined) {
-                    this.#isRunning = jsonData.isRunning;
+                    this.isRunning = jsonData.isRunning;
                 }
                 if (jsonData.isStopForThisWeek !== undefined) {
                     this.#isStopForThisWeek = jsonData.isStopForThisWeek;
@@ -90,7 +102,7 @@ class PollController {
     }
 
     get isCallable() {
-        if (!this.#isRunning) return false;
+        if (!this.isRunning) return false;
 
         if (this.#isStopForThisWeek) return false;
 
@@ -117,29 +129,31 @@ class PollController {
 
     continue() {
         this.#isStopForThisWeek = false;
-        this.#isRunning = true;
+        this.isRunning = true;
         this.saveState();
     }
 
     turnOff() {
-        this.#isRunning = false;
+        this.isRunning = false;
         this.#chatId = null;
         this.chatIdDb.removeFile();
     }
 
-    turnOn(chatId, threadId, selectedDay) {
+    turnOn(chatId, threadId, selectedDay, chatTitle) {
         this.setChatId(chatId);
         this.#threadId = threadId;
-        this.#isRunning = true;
+        this.isRunning = true;
         this.selectedDay = selectedDay;
+        this.chatTitle = chatTitle;
 
         // Save all state to JSON file
         const stateData = {
             selectedDay, 
             threadId,
             chatId,
-            isRunning: this.#isRunning,
-            isStopForThisWeek: this.#isStopForThisWeek
+            isRunning: this.isRunning,
+            isStopForThisWeek: this.#isStopForThisWeek,
+            chatTitle
         };
 
         try {
@@ -184,7 +198,7 @@ class PollController {
             chatId: this.#chatId,
             threadId: this.#threadId,
             selectedDay: this.selectedDay,
-            isRunning: this.#isRunning,
+            isRunning: this.isRunning,
             isStopForThisWeek: this.#isStopForThisWeek
         };
         this.setupCronJobForConfig(config);
@@ -194,8 +208,9 @@ class PollController {
         const stateData = {
             chatId: this.#chatId,
             threadId: this.#threadId,
-            isRunning: this.#isRunning,
-            isStopForThisWeek: this.#isStopForThisWeek
+            isRunning: this.isRunning,
+            isStopForThisWeek: this.#isStopForThisWeek,
+            selectedDay: this.selectedDay
         };
 
         try {
@@ -213,9 +228,15 @@ class PollController {
      * Setup cron job for a specific configuration
      */
     setupCronJobForConfig(config) {
-        const { chatId, threadId, selectedDay, isRunning, isStopForThisWeek } = config;
+        const {
+            chatId,
+            threadId,
+            selectedDay,
+            isRunning
+            // isStopForThisWeek
+        } = config;
         
-        if (!isRunning || isStopForThisWeek) {
+        if (!isRunning) {
             return;
         }
 

@@ -63,6 +63,11 @@ bot.command('skip', async (ctx) => {
     }
 });
 
+bot.command('continue', (ctx) => {
+    if (!ctx.isReply) return;
+    gateway.getPollController(ctx).continue();
+});
+
 bot.command('kickoff', async (ctx) => {
     if (!ctx.isReply) return;
 
@@ -92,7 +97,8 @@ bot.on('callback_query', async (ctx) => {
     await gateway.getPollController(ctx).turnOn(
         ctx.callbackQuery.message.chat.id,
         ctx.callbackQuery.message.message_thread_id,
-        Number(ctx.callbackQuery.data)
+        Number(ctx.callbackQuery.data),
+        ctx.callbackQuery.message.chat.title
     );
 
     // setup cron job base on selected day
