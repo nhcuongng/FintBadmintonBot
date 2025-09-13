@@ -1,3 +1,16 @@
+# [1.2.0](https://github.com/nhcuongng/FintBadmintonBot/compare/v1.1.0...v1.2.0) (2025-09-13)
+
+
+### Bug Fixes
+
+* **bot:** enhance reply option and restrict rule ([fd86014](https://github.com/nhcuongng/FintBadmintonBot/commit/fd86014f4cb95e69b3774d64b637b8c7f1ca33e7))
+* **cron:** timezone in cron parser ([fe3e2f2](https://github.com/nhcuongng/FintBadmintonBot/commit/fe3e2f25b80bcd87de8b6951f4dbd2d69c129e23))
+
+
+### Features
+
+* **web:** add a basic webpage for show and handle some action ([4717437](https://github.com/nhcuongng/FintBadmintonBot/commit/4717437abba7d53bd25863a33b6370319e604bc8))
+
 # [1.1.0](https://github.com/nhcuongng/FintBadmintonBot/compare/v1.0.0...v1.1.0) (2025-08-23)
 
 
