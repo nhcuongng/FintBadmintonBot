@@ -4,6 +4,9 @@ const URL_SEND_POLL = `${URL_BASE}/sendPoll`;
 
 const URL_SEND_MESSAGE = `${URL_BASE}/sendMessage`;
 
+const TIME_ZONE = 'Asia/Ho_Chi_Minh';
+
+
 const DAY_OF_THE_WEEK = [
     { text: 'Thứ Hai', callback_data: '1' },
     { text: 'Thứ Ba', callback_data: '2' },
@@ -16,5 +19,6 @@ module.exports = {
     URL_SEND_POLL,
     URL_SEND_MESSAGE,
     URL_BASE,
-    DAY_OF_THE_WEEK
+    DAY_OF_THE_WEEK,
+    TIME_ZONE
 };

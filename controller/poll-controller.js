@@ -1,6 +1,7 @@
 const JsonDatabase = require('../db');
 const cron = require('node-cron');
 const { isFunction, get } = require('lodash');
+const { TIME_ZONE } = require('../constant');
 
 const { handleSendPoll } = require('../controller/create-poll');
 const { handleSendReminder } = require('../controller/reminder');
@@ -12,6 +13,7 @@ class PollController {
     #isRunning;
     chatIdDb;
     selectedDay;
+
 
     // the count of the day from selected day
     range = 2;
@@ -226,7 +228,7 @@ class PollController {
         };
 
         const option = {
-            timezone: 'Asia/Ho_Chi_Minh',
+            timezone: TIME_ZONE,
             noOverlap: true
         };
 
