@@ -1,11 +1,13 @@
 const dayjs = require('dayjs');
-const { URL_SEND_POLL } = require('../../constant');
+const { URL_SEND_POLL, TIME_ZONE } = require('../../constant');
 const { CronExpressionParser } = require('cron-parser');
 
 async function handleSendPoll(params, range, expression) {
     const urlSendPoll = URL_SEND_POLL;
     // First, let's format the date in Vietnamese style
-    const interval = CronExpressionParser.parse(expression);
+    const interval = CronExpressionParser.parse(expression, {
+        tz: TIME_ZONE
+    });
     const nextPlayDate = dayjs(interval.next().toString()).add(range, 'day');
     const formattedDate = `${nextPlayDate.format('DD/MM/YYYY')} (${nextPlayDate.day() === 0 ? 'Chủ Nhật' : `Thứ ${nextPlayDate.day() + 1}`})`;
 
@@ -19,7 +21,7 @@ async function handleSendPoll(params, range, expression) {
             body: JSON.stringify({
                 ...params,
                 question: `🏸 Anh chị em ơi! Lịch đánh cầu tuần này: ${formattedDate}. Mọi người tham gia nhé!`,
-                options: ['Tham gia chắc chắn luôn! 💪', 'Xin phép bận rồi 😢', 'Có thể tham gia (xác nhận sau) 🤔'],
+                options: ['Tham gia chắc chắn luôn! 💪', 'Xin phép bận rồi 😢'],
                 'disable_notification': false,
                 is_anonymous: false
             })
