@@ -87,7 +87,7 @@ bot.command('stop', async (ctx) => {
 
 bot.on('callback_query', async (ctx) => {
     if (!ctx.isReply) {
-        await ctx.answerCbQuery(`Bạn không có quyền tương tác với Bot hãy, liên hệ quản trị viên của bạn: @${process.env.ADMIN_USERNAME}`, {
+        await ctx.answerCbQuery(`Đừng cố gắng vì tôi chỉ nhận lệnh từ người tạo ra tuyệt tác này 😍 @${process.env.ADMIN_USERNAME}`, {
             show_alert: true
         });
         return;
