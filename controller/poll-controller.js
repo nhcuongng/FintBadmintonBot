@@ -267,7 +267,7 @@ class PollController {
                     console.error('Không thể tạo poll được cho', chatId);
                     return;
                 }
-                await handleSendPoll(paramsBot, this.range, CRON_EXPRESSION_CREATE_POLL);
+                await handleSendPoll(paramsBot, this.range);
             },
             option
         );
