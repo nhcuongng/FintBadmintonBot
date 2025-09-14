@@ -1,4 +1,1 @@
-- improve topic save in db
-- improve server test:
-  - restart all cron job when deploy new one
-  - run poll manager (cron execute) for testing alternative use direction function
+- Fix the api send-poll, when hit the api, must create poll by the closest day
