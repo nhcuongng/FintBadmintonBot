@@ -1,14 +1,9 @@
 const dayjs = require('dayjs');
-const { URL_SEND_POLL, TIME_ZONE } = require('../../constant');
-const { CronExpressionParser } = require('cron-parser');
+const { URL_SEND_POLL } = require('../../constant');
 
-async function handleSendPoll(params, range, expression) {
+async function handleSendPoll(params, range) {
     const urlSendPoll = URL_SEND_POLL;
-    // First, let's format the date in Vietnamese style
-    const interval = CronExpressionParser.parse(expression, {
-        tz: TIME_ZONE
-    });
-    const nextPlayDate = dayjs(interval.next().toString()).add(range, 'day');
+    const nextPlayDate = dayjs().add(range, 'day');
     const formattedDate = `${nextPlayDate.format('DD/MM/YYYY')} (${nextPlayDate.day() === 0 ? 'Chủ Nhật' : `Thứ ${nextPlayDate.day() + 1}`})`;
 
     try {
