@@ -1,3 +1,11 @@
+## [1.2.1](https://github.com/nhcuongng/FintBadmintonBot/compare/v1.2.0...v1.2.1) (2025-09-15)
+
+
+### Bug Fixes
+
+* **cron:** handle send poll acting with schedule plus range day ([b1bdf74](https://github.com/nhcuongng/FintBadmintonBot/commit/b1bdf74020abce3740587dc65bd1489f4fa96235))
+* **send-poll:** send poll manually with more extracly ([7dbadc5](https://github.com/nhcuongng/FintBadmintonBot/commit/7dbadc5b7ca15d2214482a5065a6f7b9fea98e3e))
+
 # [1.2.0](https://github.com/nhcuongng/FintBadmintonBot/compare/v1.1.0...v1.2.0) (2025-09-13)
 
 
