@@ -201,6 +201,23 @@ function toggleCollapse(elementId) {
     }
 }
 
+// eslint-disable-next-line no-unused-vars
+async function handleSendPoll() {
+    try {
+        const response = await fetch('/send-poll');
+        const data = await response.json();
+        
+        if (data.success) {
+            alert('Poll sent successfully!');
+        } else {
+            alert('Failed to send poll: ' + (data.message || 'Unknown error'));
+        }
+    } catch (error) {
+        console.error('Error sending poll:', error);
+        alert('Error sending poll: ' + error.message);
+    }
+}
+
 // Load cron list when page loads
 document.addEventListener('DOMContentLoaded', function() {
     loadCronList();

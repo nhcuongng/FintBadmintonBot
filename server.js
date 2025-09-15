@@ -5,9 +5,11 @@ const path = require('path');
 const { CronExpressionParser } = require('cron-parser');
 const cronstrue = require('cronstrue');
 const { TIME_ZONE } = require('./constant');
+const dayjs = require('dayjs');
+const { formatDateWithVietnameseDay } = require('./utils/date');
 
-const { handleSendPoll } = require('./controller/create-poll');
-// const { handleSendReminder } = require('./controller/reminder');
+const { callApiTelegramCreatePoll } = require('./controller/create-poll');
+
 const { gateway } = require('./controller/gateway');
 const { PollController } = require('./controller/poll-controller');
 
@@ -128,7 +130,10 @@ app.get('/send-poll', async (req, res) => {
         const promises = Object.keys(gateway.subject).map(async (key) => {
             const pollController = gateway.subject[key];
 
-            return await handleSendPoll(pollController.paramsBot, pollController.range, pollController.cronExpression.CRON_EXPRESSION_CREATE_POLL);
+            const closestDate = dayjs().day(pollController.selectedDay);
+            const dateString = formatDateWithVietnameseDay(closestDate);
+
+            return await callApiTelegramCreatePoll(pollController.paramsBot, dateString);
         });
         
         await Promise.all(promises);

@@ -20,10 +20,10 @@ This Telegram bot helps organize weekly badminton games by automatically creatin
 1. **Initial Setup**
    - Add the bot to your Telegram group
    - Run `/kickoff` to start the bot
-   - The bot will automatically create polls every Wednesday
+   - The bot will automatically create polls by your decision
 
 2. **Weekly Management**
-   - Bot creates polls automatically on Wednesdays
+   - Bot creates polls automatically on the day
    - Use `/skip` if the group wants to skip a week
    - Use `/stop` to completely disable the bot
 
