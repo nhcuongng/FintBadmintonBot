@@ -5,6 +5,7 @@ const { TIME_ZONE } = require('../constant');
 
 const { handleSendPoll } = require('../controller/create-poll');
 const { handleSendReminder } = require('../controller/reminder');
+const { autoPinnedTheNewOne } = require('./pin-message');
 
 class PollController {
     #isStopForThisWeek;
@@ -15,6 +16,7 @@ class PollController {
     selectedDay;
     chatTitle;
     sheetId;
+    previousPinnedId;
 
 
     // the count of the day from selected day
@@ -52,6 +54,9 @@ class PollController {
                 }
                 if (jsonData.selectedDay) {
                     this.selectedDay = jsonData.selectedDay;
+                }
+                if (jsonData.previousPinnedId) {
+                    this.previousPinnedId = jsonData.previousPinnedId;
                 }
                 if (jsonData.chatTitle) {
                     this.chatTitle = jsonData.chatTitle;
@@ -216,7 +221,8 @@ class PollController {
             isRunning: this.isRunning,
             isStopForThisWeek: this.#isStopForThisWeek,
             selectedDay: this.selectedDay,
-            sheetId: this.sheetId
+            sheetId: this.sheetId,
+            previousPinnedId: this.previousPinnedId
         };
 
         try {
@@ -273,7 +279,15 @@ class PollController {
                     console.error('Không thể tạo poll được cho', chatId);
                     return;
                 }
-                await handleSendPoll(paramsBot, this.range);
+                const messageId = await handleSendPoll(paramsBot, this.range);
+
+                if (messageId) {
+                    await autoPinnedTheNewOne(messageId, this.jsonData.previousPinnedId, jsonData.chatId);
+                }
+
+
+                this.previousPinnedId = messageId;
+                this.saveState();
             },
             option
         );

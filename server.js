@@ -13,6 +13,8 @@ const { listUser } = require('./utils/drive');
 const { gateway } = require('./controller/gateway');
 const { PollController } = require('./controller/poll-controller');
 const { handleSendMonthlyCollection } = require('./controller/collect-money-monthly');
+const { autoPinnedTheNewOne } = require('./controller/pin-message');
+
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -246,7 +248,15 @@ app.get('/send-poll', async (req, res) => {
             const closestDate = dayjs().day(pollController.selectedDay);
             const dateString = formatDateWithVietnameseDay(closestDate);
 
-            return await callApiTelegramCreatePoll(pollController.paramsBot, dateString);
+            const messageId = await callApiTelegramCreatePoll(pollController.paramsBot, dateString);
+            if (messageId) {
+                const previousPinnedId = pollController.previousPinnedId;
+               
+                await autoPinnedTheNewOne(messageId, previousPinnedId, pollController.paramsBot.chat_id);
+
+                pollController.previousPinnedId = messageId;
+                pollController.saveState();
+            }
         });
         
         await Promise.all(promises);

@@ -41,6 +41,21 @@ class Gateway {
             return this.subject[key];
         }
     }
+
+    getPollControllerByChatId(chatId) {
+        const key = Object.keys(this.subject).find((key) => {
+            const pollController = gateway.subject[key];
+            
+            const { paramsBot } = pollController;
+
+            return String(paramsBot.chat_id) === chatId;
+        });
+
+
+        if (key) {
+            return this.subject[key];
+        }
+    }
 }
 
 const gateway = new Gateway();
