@@ -126,6 +126,21 @@ function displayCronJobs(cronJobsData) {
                             <span class="text-gray-800 sm:ml-2 text-xs sm:text-sm">${formattedDate}</span>
                         </div>
                     </div>
+                    
+                    ${job.threadId ? `
+                        <div class="mt-3 pt-3 border-t border-gray-200">
+                            <div class="flex flex-col sm:flex-row gap-2">
+                                <button onclick="openCollectMoneyModal('${job.threadId}')" 
+                                        class="flex-1 bg-purple-400 p-2 rounded-lg text-white hover:bg-purple-500 transition-colors text-sm">
+                                    Update Sheet ID
+                                </button>
+                                <button onclick="sendCollectNotification('${job.threadId}')" 
+                                        class="flex-1 bg-blue-400 p-2 rounded-lg text-white hover:bg-blue-500 transition-colors text-sm">
+                                    Send Collect Notification
+                                </button>
+                            </div>
+                        </div>
+                    ` : ''}
                 </div>
             `;
         }).join('');
@@ -215,6 +230,125 @@ async function handleSendPoll() {
     } catch (error) {
         console.error('Error sending poll:', error);
         alert('Error sending poll: ' + error.message);
+    }
+}
+
+// eslint-disable-next-line no-unused-vars
+async function openCollectMoneyModal(threadId) {
+    const modal = document.getElementById('updateSheetIdModal');
+    modal.classList.remove('hidden');
+    const threadIdInput = document.getElementById('threadIdInput');
+    const sheetIdInput = document.getElementById('sheetId');
+    
+    threadIdInput.value = threadId || '';
+    
+    // Fetch sheet ID if thread ID is provided
+    if (threadId) {
+        try {
+            const response = await fetch(`/get-sheetId?threadId=${encodeURIComponent(threadId)}`);
+            const data = await response.json();
+            
+            if (data.success && data.sheetId) {
+                sheetIdInput.value = data.sheetId;
+            } else {
+                sheetIdInput.value = '';
+            }
+        } catch (error) {
+            console.error('Error fetching sheet ID:', error);
+            sheetIdInput.value = '';
+        }
+    } else {
+        sheetIdInput.value = '';
+    }
+}
+
+// eslint-disable-next-line no-unused-vars
+function closeUpdateSheetIdModal() {
+    const modal = document.getElementById('updateSheetIdModal');
+    modal.classList.add('hidden');
+    // Reset form
+    document.getElementById('updateSheetIdForm').reset();
+}
+
+// eslint-disable-next-line no-unused-vars
+async function handleUpdateSheetId(event) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const formData = new FormData(form);
+    const threadId = formData.get('threadId');
+    const sheetId = formData.get('sheetId');
+    
+    // Show loading state
+    const submitButton = form.querySelector('button[type="submit"]');
+    const originalText = submitButton.textContent;
+    submitButton.textContent = 'Processing...';
+    submitButton.disabled = true;
+    
+    try {
+        const response = await fetch('/update-sheet-id', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                threadId: threadId,
+                sheetId: sheetId
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            alert(`Success: ${data.message}\nUsers processed: ${data.users ? data.users.length : 0}`);
+            closeUpdateSheetIdModal();
+        } else {
+            alert('Failed to collect money: ' + data.message);
+        }
+    } catch (error) {
+        console.error('Error collecting money:', error);
+        alert('Error collecting money: ' + error.message);
+    } finally {
+        // Reset button state
+        submitButton.textContent = originalText;
+        submitButton.disabled = false;
+    }
+}
+
+// eslint-disable-next-line no-unused-vars
+async function sendCollectNotification(threadId) {
+    try {
+        // Show loading state
+        const button = event.target;
+        button.textContent = 'Sending...';
+        button.disabled = true;
+
+        const response = await fetch('/send-collect-notification', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                threadId: threadId
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            alert(`Success: ${data.message}`);
+        } else {
+            alert('Failed to send collect notification: ' + data.message);
+        }
+    } catch (error) {
+        console.error('Error sending collect notification:', error);
+        alert('Error sending collect notification: ' + error.message);
+    } finally {
+        // Reset button state
+        const button = event.target;
+        const originalText = button.textContent === 'Sending...' ? 'Send Collect Notification' : button.textContent;
+        button.textContent = originalText;
+        button.disabled = false;
     }
 }
 
