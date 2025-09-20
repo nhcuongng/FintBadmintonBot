@@ -14,6 +14,7 @@ class PollController {
     chatIdDb;
     selectedDay;
     chatTitle;
+    sheetId;
 
 
     // the count of the day from selected day
@@ -42,6 +43,9 @@ class PollController {
             if (jsonData) {
                 if (jsonData.chatId) {
                     this.setChatId(jsonData.chatId);
+                }
+                if (jsonData.sheetId) {
+                    this.sheetId = jsonData.sheetId;
                 }
                 if (jsonData.threadId) {
                     this.#threadId = jsonData.threadId;
@@ -139,6 +143,7 @@ class PollController {
         this.chatIdDb.removeFile();
     }
 
+    // TODO: build a common function to build data
     turnOn(chatId, threadId, selectedDay, chatTitle) {
         this.setChatId(chatId);
         this.#threadId = threadId;
@@ -210,7 +215,8 @@ class PollController {
             threadId: this.#threadId,
             isRunning: this.isRunning,
             isStopForThisWeek: this.#isStopForThisWeek,
-            selectedDay: this.selectedDay
+            selectedDay: this.selectedDay,
+            sheetId: this.sheetId
         };
 
         try {
