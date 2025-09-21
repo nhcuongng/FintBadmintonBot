@@ -282,7 +282,11 @@ class PollController {
                 const messageId = await handleSendPoll(paramsBot, this.range);
 
                 if (messageId) {
-                    await autoPinnedTheNewOne(messageId, this.jsonData.previousPinnedId, jsonData.chatId);
+                    try {
+                        await autoPinnedTheNewOne(messageId, jsonData.previousPinnedId, jsonData.chatId);
+                    } catch (error) {
+                        console.error('Không thể pin tin nhắn', error);
+                    }
                 }
 
 
