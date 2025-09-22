@@ -2,6 +2,10 @@ const URL_BASE = `https://api.telegram.org/bot${process.env.BOT_TOKEN}`;
 
 const URL_SEND_POLL = `${URL_BASE}/sendPoll`;
 
+const URL_PIN_MESSAGE = `${URL_BASE}/pinChatMessage`;
+
+const URL_UN_PIN_MESSAGE = `${URL_BASE}/unpinChatMessage`;
+
 const URL_SEND_MESSAGE = `${URL_BASE}/sendMessage`;
 
 const TIME_ZONE = 'Asia/Ho_Chi_Minh';
@@ -20,5 +24,7 @@ module.exports = {
     URL_SEND_MESSAGE,
     URL_BASE,
     DAY_OF_THE_WEEK,
-    TIME_ZONE
+    TIME_ZONE,
+    URL_PIN_MESSAGE,
+    URL_UN_PIN_MESSAGE
 };

@@ -38,7 +38,18 @@ class JsonDatabase {
 
     updateData(data) {
         try {
-            fs.writeFileSync(this.#urlPath, JSON.stringify(data, null, 2));
+            let existingData = {};
+            
+            // Read existing data if file exists
+            if (fs.existsSync(this.#urlPath)) {
+                const fileContent = fs.readFileSync(this.#urlPath, 'utf8');
+                existingData = JSON.parse(fileContent);
+            }
+            
+            // Merge existing data with new data
+            const mergedData = { ...existingData, ...data };
+            
+            fs.writeFileSync(this.#urlPath, JSON.stringify(mergedData, null, 2));
             console.log(`Data updated in ${this.#urlPath}`);
             return true;
         } catch (error) {

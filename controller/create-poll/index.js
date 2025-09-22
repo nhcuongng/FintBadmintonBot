@@ -6,7 +6,7 @@ async function handleSendPoll(params, range) {
     const nextPlayDate = dayjs().add(range, 'day');
     const formattedDate = formatDateWithVietnameseDay(nextPlayDate);
 
-    await callApiTelegramCreatePoll(params, formattedDate);
+    return await callApiTelegramCreatePoll(params, formattedDate);
 }
 
 async function callApiTelegramCreatePoll(params, dateString) {
@@ -27,9 +27,12 @@ async function callApiTelegramCreatePoll(params, dateString) {
                 is_anonymous: false
             })
         });
-        
+
         if (res.status === 200) {
+            const body = await res.json();
+            const messageId = body.result.message_id;
             console.log('Đã gửi thăm dò thành công!');
+            return messageId;
         } else {
             const errorData = await res.json();
             throw new Error(JSON.stringify(errorData));
