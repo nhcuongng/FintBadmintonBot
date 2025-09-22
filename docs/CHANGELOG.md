@@ -1,3 +1,16 @@
+# [1.3.0](https://github.com/nhcuongng/FintBadmintonBot/compare/v1.2.1...v1.3.0) (2025-09-22)
+
+
+### Bug Fixes
+
+* cannot pinned in cron task ([e299b4a](https://github.com/nhcuongng/FintBadmintonBot/commit/e299b4a7962a38f54cb133ac21be513bc47e0cd1))
+
+
+### Features
+
+* auto pin poll as a admin ([1b011b4](https://github.com/nhcuongng/FintBadmintonBot/commit/1b011b43c44bdcd489125d80ca2aa3ef9e0e86b9))
+* send notification for collect money monthly base on excel file ([59b07e4](https://github.com/nhcuongng/FintBadmintonBot/commit/59b07e43004e2d95702abd28eebf889527af9a29))
+
 ## [1.2.1](https://github.com/nhcuongng/FintBadmintonBot/compare/v1.2.0...v1.2.1) (2025-09-15)
 
 
