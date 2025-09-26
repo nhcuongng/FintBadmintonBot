@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/nhcuongng/FintBadmintonBot/compare/v1.3.0...v1.3.1) (2025-09-26)
+
+
+### Reverts
+
+* Revert "feat: send notification for collect money monthly base on excel file" ([6ae1b55](https://github.com/nhcuongng/FintBadmintonBot/commit/6ae1b55e59c83d5a177cc539a69899345ef363d9))
+
 # [1.3.0](https://github.com/nhcuongng/FintBadmintonBot/compare/v1.2.1...v1.3.0) (2025-09-22)
 
 
