@@ -88,6 +88,14 @@ jobs:
         PORT=${{ env.PORT }}
         EOF"
 
+    - name: Setup google credentials
+      run: |
+        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
+          cd ${{ env.DEPLOY_DIR }} && \
+          cat > credentials.json << EOF
+          ${{ env.CREDENTIALS_GOOGLE }}
+        EOF"
+
     - name: Start/Restart PM2 application
       run: |
         ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
@@ -151,6 +159,14 @@ jobs:
           cat > .env << EOF
         BOT_TOKEN=${{ env.BOT_TOKEN }}
         ADMIN_USERNAME=${{ secrets.ADMIN_USERNAME }}
+        EOF"
+
+    - name: Setup google credentials
+      run: |
+        ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
+          cd ${{ env.DEPLOY_DIR }} && \
+          cat > credentials.json << EOF
+          ${{ env.CREDENTIALS_GOOGLE }}
         EOF"
 
     - name: Start/Restart PM2 application

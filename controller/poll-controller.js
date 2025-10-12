@@ -46,6 +46,9 @@ class PollController {
                 if (jsonData.chatId) {
                     this.setChatId(jsonData.chatId);
                 }
+                if (jsonData.sheetId) {
+                    this.sheetId = jsonData.sheetId;
+                }
                 if (jsonData.threadId) {
                     this.#threadId = jsonData.threadId;
                 }
@@ -145,6 +148,7 @@ class PollController {
         this.chatIdDb.removeFile();
     }
 
+    // TODO: build a common function to build data
     turnOn(chatId, threadId, selectedDay, chatTitle) {
         this.setChatId(chatId);
         this.#threadId = threadId;
