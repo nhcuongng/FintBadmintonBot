@@ -9,7 +9,9 @@
     "server": "node server.js",
     "server:dev": "nodemon --ignore ./db/*.json server.js",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "build": "ncc build index.js -o dist",
+    "build:serve": "node dist/index.js"
   },
   "keywords": [],
   "author": "",
