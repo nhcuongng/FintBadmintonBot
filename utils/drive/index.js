@@ -17,7 +17,7 @@ async function listUser(sheetId) {
     const allUser = [];
     // Authenticate with Google and get an authorized client.
     const auth = new google.auth.GoogleAuth({
-        keyFile: path.join(__dirname, './credentials.json'),
+        keyFile: path.join(__dirname, '../../credentials.json'),
         scopes: SCOPES
     });
   

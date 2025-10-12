@@ -8,7 +8,6 @@ const { TIME_ZONE } = require('./constant');
 const dayjs = require('dayjs');
 const { formatDateWithVietnameseDay } = require('./utils/date');
 const { callApiTelegramCreatePoll } = require('./controller/create-poll');
-const { listUser } = require('./utils/drive');
 
 const { gateway } = require('./controller/gateway');
 const { PollController } = require('./controller/poll-controller');
@@ -69,6 +68,7 @@ app.post('/send-collect-notification', async (req, res) => {
         if (threadId) {
             const subject = gateway.getPollControllerByThreadId(threadId);
 
+            const { listUser } = require('./utils/drive');
             const [userFunded, allUser] = await listUser(subject.sheetId);
     
             if (userFunded.length === 0) {
