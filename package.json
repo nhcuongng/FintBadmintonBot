@@ -10,7 +10,7 @@
     "server:dev": "nodemon --ignore ./db/*.json server.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "build": "ncc build index.js -o dist",
+    "build": "ncc build index.js -o dist --no-source-map-register --minify",
     "build:serve": "node dist/index.js"
   },
   "keywords": [],

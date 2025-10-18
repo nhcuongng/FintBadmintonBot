@@ -8,10 +8,10 @@ const { TIME_ZONE } = require('./constant');
 const dayjs = require('dayjs');
 const { formatDateWithVietnameseDay } = require('./utils/date');
 const { callApiTelegramCreatePoll } = require('./controller/create-poll');
-
+const { listUser } = require('./utils/drive');
 const { gateway } = require('./controller/gateway');
 const { PollController } = require('./controller/poll-controller');
-// const { handleSendMonthlyCollection } = require('./controller/collect-money-monthly');
+const { handleSendMonthlyCollection } = require('./controller/collect-money-monthly');
 const { autoPinnedTheNewOne } = require('./controller/pin-message');
 
 
@@ -59,50 +59,49 @@ app.get('/get-sheetId', (req, res) => {
     }
 });
 
-// app.post('/send-collect-notification', async (req, res) => {
-//     try {
-//         const {
-//             threadId
-//         } = req.body;
+app.post('/send-collect-notification', async (req, res) => {
+    try {
+        const {
+            threadId
+        } = req.body;
 
-//         if (threadId) {
-//             const subject = gateway.getPollControllerByThreadId(threadId);
+        if (threadId) {
+            const subject = gateway.getPollControllerByThreadId(threadId);
 
-//             const { listUser } = require('./utils/drive');
-//             const [userFunded, allUser] = await listUser(subject.sheetId);
+            const [userFunded, allUser] = await listUser(subject.sheetId);
     
-//             if (userFunded.length === 0) {
-//                 res.json({
-//                     success: true,
-//                     message: 'Mọi người đã đóng đầy đủ',
-//                     userFunded
-//                 });
-//                 return;
-//             }
+            if (userFunded.length === 0) {
+                res.json({
+                    success: true,
+                    message: 'Mọi người đã đóng đầy đủ',
+                    userFunded
+                });
+                return;
+            }
     
-//             handleSendMonthlyCollection(subject.paramsBot, userFunded, subject.sheetId, allUser);
+            handleSendMonthlyCollection(subject.paramsBot, userFunded, subject.sheetId, allUser);
 
-//             res.json({
-//                 success: true,
-//                 userFunded,
-//                 message: 'Những người chưa đóng tiền đã được nhắc nhở'
-//             });
+            res.json({
+                success: true,
+                userFunded,
+                message: 'Những người chưa đóng tiền đã được nhắc nhở'
+            });
 
-//             return;
-//         }
+            return;
+        }
 
-//         res.json({
-//             success: false,
-//             message: 'No thread id found'
-//         });
-//     } catch (error) {
-//         res.json({
-//             success: false,
-//             message: error?.message
-//         });
-//     }
+        res.json({
+            success: false,
+            message: 'No thread id found'
+        });
+    } catch (error) {
+        res.json({
+            success: false,
+            message: error?.message
+        });
+    }
 
-// });
+});
 
 app.post('/update-sheet-id', (req, res) => {
     try {

@@ -1,3 +1,6 @@
+const { google } = require('googleapis');
+const path = require('node:path');
+
 // auth
 //     .getAccessToken()
 //     .then((token) => console.log('token...', token))
@@ -8,16 +11,13 @@
  * @see https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit
  */
 async function listUser(sheetId) {
-    const { google } = require('googleapis');
-    const path = require('node:path');
-
     const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
 
     const userFunded = [];
     const allUser = [];
     // Authenticate with Google and get an authorized client.
     const auth = new google.auth.GoogleAuth({
-        keyFile: path.join(__dirname, '../../credentials.json'),
+        keyFile: path.join(process.cwd(), 'credentials.json'),
         scopes: SCOPES
     });
   
