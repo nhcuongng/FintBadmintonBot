@@ -127,7 +127,7 @@ function displayCronJobs(cronJobsData) {
                         </div>
                     </div>
                     
-                    ${job.threadId ? `
+                    <!-- ${job.threadId ? `
                         <div class="mt-3 pt-3 border-t border-gray-200">
                             <div class="flex flex-col sm:flex-row gap-2">
                                 <button onclick="openCollectMoneyModal('${job.threadId}')" 
@@ -140,7 +140,7 @@ function displayCronJobs(cronJobsData) {
                                 </button>
                             </div>
                         </div>
-                    ` : ''}
+                    ` : ''} -->
                 </div>
             `;
         }).join('');
