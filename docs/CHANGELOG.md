@@ -1,3 +1,19 @@
+## [1.3.2](https://github.com/nhcuongng/FintBadmintonBot/compare/v1.3.1...v1.3.2) (2025-10-20)
+
+
+### Bug Fixes
+
+* add credenticals.json to git ignore ([cd00379](https://github.com/nhcuongng/FintBadmintonBot/commit/cd0037962490a280f39d156d446be088821d79ff))
+* change to lazy import excel list ([d02190b](https://github.com/nhcuongng/FintBadmintonBot/commit/d02190b9ad423fef0594261d1a70cb4d6c5c518d))
+* ci environment ([8288c70](https://github.com/nhcuongng/FintBadmintonBot/commit/8288c7011d920638e879e1305ec95551765f8d37))
+* comment collect money ([363c291](https://github.com/nhcuongng/FintBadmintonBot/commit/363c291de5fc3d20d6c7c399129ba2efa7817622))
+* comment the code for send collection ([19b797b](https://github.com/nhcuongng/FintBadmintonBot/commit/19b797ba296642055f9c81aceb8c817732c13ac1))
+
+
+### Reverts
+
+* Revert "Revert "feat: send notification for collect money monthly base on excel file"" ([dbfd939](https://github.com/nhcuongng/FintBadmintonBot/commit/dbfd939568bdd422bc1755932acc2ea5ad97cae2))
+
 ## [1.3.1](https://github.com/nhcuongng/FintBadmintonBot/compare/v1.3.0...v1.3.1) (2025-09-26)
 
 
