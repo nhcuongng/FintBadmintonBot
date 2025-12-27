@@ -218,7 +218,7 @@ app.get('/restart-cron', (req, res) => {
         const fileContent = fs.readFileSync(filePath, 'utf8')
         const data = JSON.parse(fileContent)
 
-        if (data && data.chatId && data.selectedDay) {
+        if (data?.chatId && data.selectedDay) {
           const dbKey = gateway.dbKey(data.chatId, data.threadId)
           gateway.subject[dbKey] = new PollController()
           gateway.subject[dbKey].chatIdDb.setFilePath(dbKey)
