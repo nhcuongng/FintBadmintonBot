@@ -1,87 +1,94 @@
 /* eslint-disable no-undef */
 // eslint-disable-next-line no-unused-vars
-function handleRestart() {
-    // Show loading state
-    const button = event.target;
-    const originalText = button.textContent;
-    button.textContent = 'Restarting...';
-    button.disabled = true;
+function handleRestart () {
+  // Show loading state
+  const button = event.target
+  const originalText = button.textContent
+  button.textContent = 'Restarting...'
+  button.disabled = true
 
-    // Make AJAX call to restart-cron endpoint
-    fetch('/restart-cron')
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Cron jobs restarted successfully!');
-                // Refresh cron list after restart
-                loadCronList();
-            } else {
-                alert('Failed to restart cron jobs: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error restarting cron jobs. Please try again.');
-        })
-        .finally(() => {
-            // Reset button state
-            button.textContent = originalText;
-            button.disabled = false;
-        });
+  // Make AJAX call to restart-cron endpoint
+  fetch('/restart-cron')
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        alert('Cron jobs restarted successfully!')
+        // Refresh cron list after restart
+        loadCronList()
+      } else {
+        alert('Failed to restart cron jobs: ' + data.message)
+      }
+    })
+    .catch((error) => {
+      console.error('Error:', error)
+      alert('Error restarting cron jobs. Please try again.')
+    })
+    .finally(() => {
+      // Reset button state
+      button.textContent = originalText
+      button.disabled = false
+    })
 }
 
-function loadCronList() {
-    const cronListContainer = document.getElementById('cronListContainer');
-    cronListContainer.innerHTML = '<div class="text-center">Loading...</div>';
+function loadCronList () {
+  const cronListContainer = document.getElementById('cronListContainer')
+  cronListContainer.innerHTML = '<div class="text-center">Loading...</div>'
 
-    fetch('/cron-list')
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                displayCronJobs(data.cronJobs);
-            } else {
-                cronListContainer.innerHTML = '<div class="text-red-500 text-center">Failed to load cron jobs</div>';
-            }
-        })
-        .catch(error => {
-            console.error('Error loading cron list:', error);
-            cronListContainer.innerHTML = '<div class="text-red-500 text-center">Error loading cron jobs</div>';
-        });
+  fetch('/cron-list')
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        displayCronJobs(data.cronJobs)
+      } else {
+        cronListContainer.innerHTML =
+          '<div class="text-red-500 text-center">Failed to load cron jobs</div>'
+      }
+    })
+    .catch((error) => {
+      console.error('Error loading cron list:', error)
+      cronListContainer.innerHTML =
+        '<div class="text-red-500 text-center">Error loading cron jobs</div>'
+    })
 }
 
-function displayCronJobs(cronJobsData) {
-    const cronListContainer = document.getElementById('cronListContainer');
-    
-    if (!cronJobsData || Object.keys(cronJobsData).length === 0) {
-        cronListContainer.innerHTML = '<div class="text-gray-500 text-center">No active cron jobs found</div>';
-        return;
-    }
+function displayCronJobs (cronJobsData) {
+  const cronListContainer = document.getElementById('cronListContainer')
 
-    const sectionsHtml = Object.entries(cronJobsData).map(([fieldNumber, jobs]) => {
-        const jobsArray = Array.isArray(jobs) ? jobs : [jobs];
-        
-        // Separate create_poll and reminder jobs
-        const createPollJobs = jobsArray.filter(job => job.type === 'create_poll');
-        const reminderJobs = jobsArray.filter(job => job.type === 'reminder');
-        
-        const jobCardsHtml = createPollJobs.map(job => {
-            const nextDate = new Date(job.theNextDayWillSend);
-            const formattedDate = nextDate.toLocaleString('vi-VN', {
-                timeZone: 'Asia/Ho_Chi_Minh',
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                weekday: 'long'
-            });
+  if (!cronJobsData || Object.keys(cronJobsData).length === 0) {
+    cronListContainer.innerHTML =
+      '<div class="text-gray-500 text-center">No active cron jobs found</div>'
+    return
+  }
 
-            // Determine status tag
-            const statusTag = job.isCallable 
-                ? '<span class="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">Active</span>'
-                : '<span class="px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">Inactive</span>';
+  const sectionsHtml = Object.entries(cronJobsData)
+    .map(([fieldNumber, jobs]) => {
+      const jobsArray = Array.isArray(jobs) ? jobs : [jobs]
 
-            return `
+      // Separate create_poll and reminder jobs
+      const createPollJobs = jobsArray.filter(
+        (job) => job.type === 'create_poll'
+      )
+      const reminderJobs = jobsArray.filter((job) => job.type === 'reminder')
+
+      const jobCardsHtml = createPollJobs
+        .map((job) => {
+          const nextDate = new Date(job.theNextDayWillSend)
+          const formattedDate = nextDate.toLocaleString('vi-VN', {
+            timeZone: 'Asia/Ho_Chi_Minh',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            weekday: 'long'
+          })
+
+          // Determine status tag
+          const statusTag = job.isCallable
+            ? '<span class="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">Active</span>'
+            : '<span class="px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">Inactive</span>'
+
+          return `
                 <div class="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200 ml-2 sm:ml-4">
                     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 sm:gap-0 mb-3">
                         <h4 class="text-sm sm:text-md font-medium text-gray-800">Create Poll</h4>
@@ -92,24 +99,32 @@ function displayCronJobs(cronJobsData) {
                     </div>
                     
                     <div class="space-y-2 text-xs sm:text-sm">
-                        ${job.chatTitle ? `
+                        ${
+                          job.chatTitle
+                            ? `
                             <div class="flex flex-col sm:flex-row sm:items-center">
                                 <span class="font-medium text-gray-600 mb-1 sm:mb-0">Chat Title:</span>
                                 <span class="text-gray-800 sm:ml-2 break-words">${job.chatTitle}</span>
                             </div>
-                        ` : ''}
+                        `
+                            : ''
+                        }
                         
                         <div class="flex flex-col sm:flex-row sm:items-center">
                             <span class="font-medium text-gray-600 mb-1 sm:mb-0">Chat ID:</span>
                             <span class="text-gray-800 sm:ml-2 break-all font-mono text-xs">${job.chatId}</span>
                         </div>
                         
-                        ${job.threadId ? `
+                        ${
+                          job.threadId
+                            ? `
                             <div class="flex flex-col sm:flex-row sm:items-center">
                                 <span class="font-medium text-gray-600 mb-1 sm:mb-0">Thread ID:</span>
                                 <span class="text-gray-800 sm:ml-2 break-all font-mono text-xs">${job.threadId}</span>
                             </div>
-                        ` : ''}
+                        `
+                            : ''
+                        }
                         
                         <div class="flex flex-col sm:flex-row sm:items-center">
                             <span class="font-medium text-gray-600 mb-1 sm:mb-0">Schedule:</span>
@@ -127,7 +142,9 @@ function displayCronJobs(cronJobsData) {
                         </div>
                     </div>
                     
-                    <!-- ${job.threadId ? `
+                    <!-- ${
+                      job.threadId
+                        ? `
                         <div class="mt-3 pt-3 border-t border-gray-200">
                             <div class="flex flex-col sm:flex-row gap-2">
                                 <button onclick="openCollectMoneyModal('${job.threadId}')" 
@@ -140,39 +157,44 @@ function displayCronJobs(cronJobsData) {
                                 </button>
                             </div>
                         </div>
-                    ` : ''} -->
+                    `
+                        : ''
+                    } -->
                 </div>
-            `;
-        }).join('');
+            `
+        })
+        .join('')
 
-        // Create reminder tooltips
-        const reminderTooltips = reminderJobs.map(job => {
-            const nextDate = new Date(job.theNextDayWillSend);
-            const formattedDate = nextDate.toLocaleString('vi-VN', {
-                timeZone: 'Asia/Ho_Chi_Minh',
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                weekday: 'long'
-            });
+      // Create reminder tooltips
+      const reminderTooltips = reminderJobs
+        .map((job) => {
+          const nextDate = new Date(job.theNextDayWillSend)
+          const formattedDate = nextDate.toLocaleString('vi-VN', {
+            timeZone: 'Asia/Ho_Chi_Minh',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            weekday: 'long'
+          })
 
-            const tooltipContent = `
+          const tooltipContent = `
 Reminder & Schedule: ${job.description} 
 | Next: ${formattedDate}
 | Cron: ${job.cronExpression}
-            `;
-            
-            return `
+            `
+
+          return `
                 <span class="reminder-tooltip inline-flex items-center justify-center w-5 h-5 bg-green-500 text-white rounded-full text-xs font-bold cursor-help ml-2" 
                       title="${tooltipContent}">?</span>
-            `;
-        }).join('');
+            `
+        })
+        .join('')
 
-        const jobCount = createPollJobs.length;
+      const jobCount = createPollJobs.length
 
-        return `
+      return `
             <div class="bg-white rounded-lg shadow-md border border-gray-200 mb-4 mx-2 sm:mx-0">
                 <div class="p-3 sm:p-4 border-b border-gray-200">
                     <button onclick="toggleCollapse('field-${fieldNumber}')" 
@@ -196,163 +218,171 @@ Reminder & Schedule: ${job.description}
                     ${jobCardsHtml}
                 </div>
             </div>
-        `;
-    }).join('');
+        `
+    })
+    .join('')
 
-    cronListContainer.innerHTML = sectionsHtml;
+  cronListContainer.innerHTML = sectionsHtml
 }
 
 // eslint-disable-next-line no-unused-vars
-function toggleCollapse(elementId) {
-    const element = document.getElementById(elementId);
-    const chevron = document.getElementById('chevron-' + elementId);
-    
-    if (element.style.display === 'none') {
-        element.style.display = 'block';
-        chevron.style.transform = 'rotate(0deg)';
+function toggleCollapse (elementId) {
+  const element = document.getElementById(elementId)
+  const chevron = document.getElementById('chevron-' + elementId)
+
+  if (element.style.display === 'none') {
+    element.style.display = 'block'
+    chevron.style.transform = 'rotate(0deg)'
+  } else {
+    element.style.display = 'none'
+    chevron.style.transform = 'rotate(-90deg)'
+  }
+}
+
+// eslint-disable-next-line no-unused-vars
+async function handleSendPoll () {
+  try {
+    const response = await fetch('/send-poll')
+    const data = await response.json()
+
+    if (data.success) {
+      alert('Poll sent successfully!')
     } else {
-        element.style.display = 'none';
-        chevron.style.transform = 'rotate(-90deg)';
+      alert('Failed to send poll: ' + (data.message || 'Unknown error'))
     }
+  } catch (error) {
+    console.error('Error sending poll:', error)
+    alert('Error sending poll: ' + error.message)
+  }
 }
 
 // eslint-disable-next-line no-unused-vars
-async function handleSendPoll() {
+async function openCollectMoneyModal (threadId) {
+  const modal = document.getElementById('updateSheetIdModal')
+  modal.classList.remove('hidden')
+  const threadIdInput = document.getElementById('threadIdInput')
+  const sheetIdInput = document.getElementById('sheetId')
+
+  threadIdInput.value = threadId || ''
+
+  // Fetch sheet ID if thread ID is provided
+  if (threadId) {
     try {
-        const response = await fetch('/send-poll');
-        const data = await response.json();
-        
-        if (data.success) {
-            alert('Poll sent successfully!');
-        } else {
-            alert('Failed to send poll: ' + (data.message || 'Unknown error'));
-        }
+      const response = await fetch(
+        `/get-sheetId?threadId=${encodeURIComponent(threadId)}`
+      )
+      const data = await response.json()
+
+      if (data.success && data.sheetId) {
+        sheetIdInput.value = data.sheetId
+      } else {
+        sheetIdInput.value = ''
+      }
     } catch (error) {
-        console.error('Error sending poll:', error);
-        alert('Error sending poll: ' + error.message);
+      console.error('Error fetching sheet ID:', error)
+      sheetIdInput.value = ''
     }
+  } else {
+    sheetIdInput.value = ''
+  }
 }
 
 // eslint-disable-next-line no-unused-vars
-async function openCollectMoneyModal(threadId) {
-    const modal = document.getElementById('updateSheetIdModal');
-    modal.classList.remove('hidden');
-    const threadIdInput = document.getElementById('threadIdInput');
-    const sheetIdInput = document.getElementById('sheetId');
-    
-    threadIdInput.value = threadId || '';
-    
-    // Fetch sheet ID if thread ID is provided
-    if (threadId) {
-        try {
-            const response = await fetch(`/get-sheetId?threadId=${encodeURIComponent(threadId)}`);
-            const data = await response.json();
-            
-            if (data.success && data.sheetId) {
-                sheetIdInput.value = data.sheetId;
-            } else {
-                sheetIdInput.value = '';
-            }
-        } catch (error) {
-            console.error('Error fetching sheet ID:', error);
-            sheetIdInput.value = '';
-        }
+function closeUpdateSheetIdModal () {
+  const modal = document.getElementById('updateSheetIdModal')
+  modal.classList.add('hidden')
+  // Reset form
+  document.getElementById('updateSheetIdForm').reset()
+}
+
+// eslint-disable-next-line no-unused-vars
+async function handleUpdateSheetId (event) {
+  event.preventDefault()
+
+  const form = event.target
+  const formData = new FormData(form)
+  const threadId = formData.get('threadId')
+  const sheetId = formData.get('sheetId')
+
+  // Show loading state
+  const submitButton = form.querySelector('button[type="submit"]')
+  const originalText = submitButton.textContent
+  submitButton.textContent = 'Processing...'
+  submitButton.disabled = true
+
+  try {
+    const response = await fetch('/update-sheet-id', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        threadId,
+        sheetId
+      })
+    })
+
+    const data = await response.json()
+
+    if (data.success) {
+      alert(
+        `Success: ${data.message}\nUsers processed: ${data.users ? data.users.length : 0}`
+      )
+      closeUpdateSheetIdModal()
     } else {
-        sheetIdInput.value = '';
+      alert('Failed to collect money: ' + data.message)
     }
+  } catch (error) {
+    console.error('Error collecting money:', error)
+    alert('Error collecting money: ' + error.message)
+  } finally {
+    // Reset button state
+    submitButton.textContent = originalText
+    submitButton.disabled = false
+  }
 }
 
 // eslint-disable-next-line no-unused-vars
-function closeUpdateSheetIdModal() {
-    const modal = document.getElementById('updateSheetIdModal');
-    modal.classList.add('hidden');
-    // Reset form
-    document.getElementById('updateSheetIdForm').reset();
-}
-
-// eslint-disable-next-line no-unused-vars
-async function handleUpdateSheetId(event) {
-    event.preventDefault();
-    
-    const form = event.target;
-    const formData = new FormData(form);
-    const threadId = formData.get('threadId');
-    const sheetId = formData.get('sheetId');
-    
+async function sendCollectNotification (threadId) {
+  try {
     // Show loading state
-    const submitButton = form.querySelector('button[type="submit"]');
-    const originalText = submitButton.textContent;
-    submitButton.textContent = 'Processing...';
-    submitButton.disabled = true;
-    
-    try {
-        const response = await fetch('/update-sheet-id', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                threadId: threadId,
-                sheetId: sheetId
-            })
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            alert(`Success: ${data.message}\nUsers processed: ${data.users ? data.users.length : 0}`);
-            closeUpdateSheetIdModal();
-        } else {
-            alert('Failed to collect money: ' + data.message);
-        }
-    } catch (error) {
-        console.error('Error collecting money:', error);
-        alert('Error collecting money: ' + error.message);
-    } finally {
-        // Reset button state
-        submitButton.textContent = originalText;
-        submitButton.disabled = false;
-    }
-}
+    const button = event.target
+    button.textContent = 'Sending...'
+    button.disabled = true
 
-// eslint-disable-next-line no-unused-vars
-async function sendCollectNotification(threadId) {
-    try {
-        // Show loading state
-        const button = event.target;
-        button.textContent = 'Sending...';
-        button.disabled = true;
+    const response = await fetch('/send-collect-notification', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        threadId
+      })
+    })
 
-        const response = await fetch('/send-collect-notification', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                threadId: threadId
-            })
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            alert(`Success: ${data.message}`);
-        } else {
-            alert('Failed to send collect notification: ' + data.message);
-        }
-    } catch (error) {
-        console.error('Error sending collect notification:', error);
-        alert('Error sending collect notification: ' + error.message);
-    } finally {
-        // Reset button state
-        const button = event.target;
-        const originalText = button.textContent === 'Sending...' ? 'Send Collect Notification' : button.textContent;
-        button.textContent = originalText;
-        button.disabled = false;
+    const data = await response.json()
+
+    if (data.success) {
+      alert(`Success: ${data.message}`)
+    } else {
+      alert('Failed to send collect notification: ' + data.message)
     }
+  } catch (error) {
+    console.error('Error sending collect notification:', error)
+    alert('Error sending collect notification: ' + error.message)
+  } finally {
+    // Reset button state
+    const button = event.target
+    const originalText =
+      button.textContent === 'Sending...'
+        ? 'Send Collect Notification'
+        : button.textContent
+    button.textContent = originalText
+    button.disabled = false
+  }
 }
 
 // Load cron list when page loads
-document.addEventListener('DOMContentLoaded', function() {
-    loadCronList();
-});
+document.addEventListener('DOMContentLoaded', function () {
+  loadCronList()
+})

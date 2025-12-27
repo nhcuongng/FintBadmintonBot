@@ -1,63 +1,64 @@
-const { PollController } = require('./poll-controller');
+const { PollController } = require('./poll-controller')
 
 class Gateway {
-    subject = {};
+  subject = {}
 
-    dbKey(chatId, threadId) {
-        return `${chatId}_${threadId}`;
+  dbKey (chatId, threadId) {
+    return `${chatId}_${threadId}`
+  }
+
+  objectKey (ctx) {
+    const chatId =
+      ctx.callbackQuery?.message?.chat?.id || ctx.message?.chat?.id
+    const threadId =
+      ctx.callbackQuery?.message?.message_thread_id ||
+      ctx.message?.message_thread_id
+
+    return this.dbKey(chatId, threadId)
+  }
+
+  getPollController (ctx) {
+    const key = this.objectKey(ctx)
+
+    if (!this.subject[key]) {
+      this.subject[key] = new PollController()
     }
 
-    objectKey(ctx) {
-        const chatId = ctx.callbackQuery?.message?.chat?.id || ctx.message?.chat?.id;
-        const threadId = ctx.callbackQuery?.message?.message_thread_id || ctx.message?.message_thread_id;
+    this.subject[key].chatIdDb.setFilePath(key)
+    this.subject[key].initDb()
 
-        return this.dbKey(chatId, threadId);
+    return this.subject[key]
+  }
+
+  getPollControllerByThreadId (threadId) {
+    const key = Object.keys(this.subject).find((key) => {
+      const pollController = gateway.subject[key]
+
+      const { paramsBot } = pollController
+
+      return String(paramsBot.message_thread_id) === threadId
+    })
+
+    if (key) {
+      return this.subject[key]
     }
+  }
 
-    getPollController(ctx) {
-        const key = this.objectKey(ctx);
+  getPollControllerByChatId (chatId) {
+    const key = Object.keys(this.subject).find((key) => {
+      const pollController = gateway.subject[key]
 
-        if (!this.subject[key]) {
-            this.subject[key] = new PollController();
-        }
+      const { paramsBot } = pollController
 
-        this.subject[key].chatIdDb.setFilePath(key);
-        this.subject[key].initDb();
+      return String(paramsBot.chat_id) === chatId
+    })
 
-        return this.subject[key];
+    if (key) {
+      return this.subject[key]
     }
-
-    getPollControllerByThreadId(threadId) {
-        const key = Object.keys(this.subject).find((key) => {
-            const pollController = gateway.subject[key];
-            
-            const { paramsBot } = pollController;
-
-            return String(paramsBot.message_thread_id) === threadId;
-        });
-
-
-        if (key) {
-            return this.subject[key];
-        }
-    }
-
-    getPollControllerByChatId(chatId) {
-        const key = Object.keys(this.subject).find((key) => {
-            const pollController = gateway.subject[key];
-            
-            const { paramsBot } = pollController;
-
-            return String(paramsBot.chat_id) === chatId;
-        });
-
-
-        if (key) {
-            return this.subject[key];
-        }
-    }
+  }
 }
 
-const gateway = new Gateway();
+const gateway = new Gateway()
 
-exports.gateway = gateway;
+exports.gateway = gateway
