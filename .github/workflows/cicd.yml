@@ -80,7 +80,7 @@ jobs:
             # create env
             mkdir -p db
             echo "
-              BOT_TOKEN=${{ env.BOT_TOKEN }}
+              BOT_TOKEN=${{ secrets.BOT_TOKEN }}
               ADMIN_USERNAME=${{ secrets.ADMIN_USERNAME }}
             " >> .env
 
