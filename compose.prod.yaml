@@ -14,7 +14,7 @@ services:
       -NODE_ENV: production
       -PORT: $PORT
     volumes:
-      - /app/cau-long-bot/db/json:/usr/src/app/cau-long-bot/dist/db/json:rw
+      - /app/cau-long-bot/db/json:/usr/src/app/cau-long-bot/db/json:rw
     env_file:
       - .env
     ports:

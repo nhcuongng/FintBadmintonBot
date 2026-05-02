@@ -13,6 +13,8 @@ services:
       context: .
       args:
         - NODE_ENV=production
+    volumes:
+      - /Users/cuongnguyenhuu/Projects/cau-long-bot/db/json:/usr/src/app/cau-long-bot/db/json
     env_file:
       - .env
     ports:

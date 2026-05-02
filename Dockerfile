@@ -58,8 +58,8 @@ FROM base AS final
 # Use production node environment by default.
 ENV NODE_ENV=production
 
-RUN mkdir -p ./dist/db/json
-RUN chown -R node:node ./dist/db/json
+RUN mkdir -p ./db/json
+RUN chown -R node:node ./db/json
 
 # Run the application as a non-root user.
 USER node
