@@ -58,6 +58,9 @@ FROM base AS final
 # Use production node environment by default.
 ENV NODE_ENV=production
 
+RUN mkdir -p ./dist/db/json
+RUN chown -R node:node ./dist/db/json
+
 # Run the application as a non-root user.
 USER node
 
@@ -66,9 +69,6 @@ COPY package.json .
 
 # Copy the built application from the build stage into the image (dependencies are bundled by ncc).
 COPY --from=build /usr/src/app/cau-long-bot/dist ./dist
-
-RUN mkdir ./dist/db/json
-RUN chown -R node:node ./dist/db/json
 
 # Expose the port that the application listens on.
 EXPOSE 4000
