@@ -67,7 +67,7 @@ COPY package.json .
 # Copy the built application from the build stage into the image (dependencies are bundled by ncc).
 COPY --from=build /usr/src/app/cau-long-bot/dist ./dist
 
-RUN chown -R $USER:$USER ./dist/db
+RUN chown -R node:node ./dist/db/json
 
 # Expose the port that the application listens on.
 EXPOSE 4000

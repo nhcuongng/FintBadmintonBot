@@ -13,6 +13,8 @@ services:
     environment:
       -NODE_ENV: production
       -PORT: $PORT
+    volumes:
+      - ./db/json:app/cau-long-bot/dist/db/json
     env_file:
       - .env
     ports:
