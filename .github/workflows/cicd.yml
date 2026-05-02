@@ -95,4 +95,5 @@ jobs:
             docker compose up -d
             docker image prune -af  # Xóa image cũ để tiết kiệm ổ cứng VPS
 
-            curl -f http://localhost:${{ env.PORT }}/restart-cron || exit 1
+            sleep 10
+            curl -f http://localhost:${PORT}/restart-cron || exit 1
