@@ -3,9 +3,9 @@ name: CI and CD to Vietnix
 run-name: Deploy to ${{ inputs.deploy_target }} by @${{ github.actor }}
 
 on:
-  create:
+  push:
     tags:
-      - 'v*'
+      - 'v*.*.*'
 jobs:
   docker:
     runs-on: ubuntu-latest
