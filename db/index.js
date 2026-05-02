@@ -16,7 +16,7 @@ class JsonDatabase {
     }
 
     readData() {
-        const data = fs.readFileSync(path.join(__dirname, this.#urlPath), 'utf8');
+        const data = fs.readFileSync(this.#urlPath, 'utf8');
         const jsonData = JSON.parse(data);
         return jsonData;
     }

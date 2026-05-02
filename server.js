@@ -195,7 +195,7 @@ app.get('/cron-list', (req, res) => {
 
 app.get('/restart-cron', (req, res) => {
     try {
-        const dbPath = path.join(__dirname, ROOT_PATH);
+        const dbPath = ROOT_PATH;
         
         // Check if db directory exists
         if (!fs.existsSync(dbPath)) {
