@@ -46,7 +46,7 @@ COPY . .
 RUN npm i -g @vercel/ncc
 
 # Run the build script.
-RUN npm run build && mkdir -p ./dist/db/json && chown -R node:node ./dist/db/json
+RUN npm run build
 
 ################################################################################
 # Create a new stage to run the application with minimal runtime dependencies
@@ -57,6 +57,9 @@ FROM base AS final
 
 # Use production node environment by default.
 ENV NODE_ENV=production
+
+RUN mkdir -p ./dist/db/json
+RUN chown -R node:node ./dist/db/json
 
 # Run the application as a non-root user.
 USER node
