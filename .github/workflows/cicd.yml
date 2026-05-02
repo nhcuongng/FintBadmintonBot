@@ -1,6 +1,6 @@
 name: CI and CD to Vietnix
 
-run-name: Deploy to ${{ inputs.deploy_target }} by @${{ github.actor }}
+run-name: Deploy to Vietnix by @${{ github.actor }}
 
 on:
   push:
@@ -10,6 +10,8 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     environment: secret
+    env:
+      PORT: 4000
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -64,13 +66,18 @@ jobs:
         env:
           # Lấy chính xác version mà bước 'meta' đã xác định
           DEPLOY_TAG: ${{ steps.meta.outputs.version }}
+          PORT: ${{ env.PORT }}
         with:
           host: ${{ secrets.SSH_HOST_VIETNIX }}
           username: ${{ secrets.SSH_USER }}
-          envs: DEPLOY_TAG
+          envs: DEPLOY_TAG, PORT
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             export TAG=$DEPLOY_TAG
+            export PORT=$PORT
+
+            echo "Deploying version $TAG"
+            echo "Deploying to port $PORT"
           
             cd /app/cau-long-bot
             
@@ -87,3 +94,5 @@ jobs:
             docker compose pull
             docker compose up -d
             docker image prune -af  # Xóa image cũ để tiết kiệm ổ cứng VPS
+
+            curl -f http://localhost:${PORT}/restart-cron || exit 1

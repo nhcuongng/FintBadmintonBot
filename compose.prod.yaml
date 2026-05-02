@@ -11,11 +11,12 @@ services:
   cau-long-bot:
     image: nhcuong/cau-long-bot:${TAG:-latest}
     environment:
-      NODE_ENV: production
+      -NODE_ENV: production
+      -PORT: $PORT
     env_file:
       - .env
     ports:
-      - 4000:4000
+      - $PORT:$PORT
 networks:
   default:
     external: true
