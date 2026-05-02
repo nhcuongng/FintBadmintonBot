@@ -13,6 +13,7 @@ const { gateway } = require('./controller/gateway');
 const { PollController } = require('./controller/poll-controller');
 // const { handleSendMonthlyCollection } = require('./controller/collect-money-monthly');
 const { autoPinnedTheNewOne } = require('./controller/pin-message');
+const ROOT_PATH = require('./utils/db');
 
 
 const app = express();
@@ -194,7 +195,7 @@ app.get('/cron-list', (req, res) => {
 
 app.get('/restart-cron', (req, res) => {
     try {
-        const dbPath = path.join(__dirname, 'db');
+        const dbPath = path.join(__dirname, ROOT_PATH);
         
         // Check if db directory exists
         if (!fs.existsSync(dbPath)) {
