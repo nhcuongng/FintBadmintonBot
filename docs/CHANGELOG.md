@@ -1,3 +1,10 @@
+## [1.4.1](https://github.com/nhcuongng/FintBadmintonBot/compare/v1.4.0...v1.4.1) (2026-05-03)
+
+
+### Bug Fixes
+
+* update GitHub Actions workflow to use PAT for releases and add job summary ([afc611c](https://github.com/nhcuongng/FintBadmintonBot/commit/afc611c297186f218e2276dec0fda0b5892bee2e))
+
 # [1.4.0](https://github.com/nhcuongng/FintBadmintonBot/compare/v1.3.2...v1.4.0) (2026-05-03)
 
 
