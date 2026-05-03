@@ -1,3 +1,35 @@
+# [1.4.0](https://github.com/nhcuongng/FintBadmintonBot/compare/v1.3.2...v1.4.0) (2026-05-03)
+
+
+### Bug Fixes
+
+* add sleep before curl command to ensure service is ready ([ce59834](https://github.com/nhcuongng/FintBadmintonBot/commit/ce5983486fa29b758fac71d4e566c9afef5888bf))
+* add volume definition for db-caulongbot in Docker Compose configuration ([d68d11d](https://github.com/nhcuongng/FintBadmintonBot/commit/d68d11d6d0c9d7ec8d5ef49b74f09e5f5ac8655f))
+* change github event to push tag ([509c3de](https://github.com/nhcuongng/FintBadmintonBot/commit/509c3dea2b07a1a452bd357a70e53a4b1a004112))
+* change to right env github action ([e2401b4](https://github.com/nhcuongng/FintBadmintonBot/commit/e2401b4d3abc237fe1aa8cb32b8ed4c3e0d1c029))
+* correct syntax for NODE_ENV variable in Dockerfile ([f068a55](https://github.com/nhcuongng/FintBadmintonBot/commit/f068a55fa3f872eace35d73fb18d2f93d1bf667d))
+* correct volume path in Docker Compose configuration ([8586f77](https://github.com/nhcuongng/FintBadmintonBot/commit/8586f77715c92e42c699e03c52e973c711109d8d))
+* create JSON directory and set ownership during build process ([5fcbdee](https://github.com/nhcuongng/FintBadmintonBot/commit/5fcbdee0726ea4c49de92281380b10516429c9d2))
+* create JSON directory in dist/db and set ownership for proper access ([b167bfd](https://github.com/nhcuongng/FintBadmintonBot/commit/b167bfd4c771101a2d4f1d7d95688fac1ecffa62))
+* create JSON directory in final stage and set ownership for non-root user ([6031da1](https://github.com/nhcuongng/FintBadmintonBot/commit/6031da1776f22e22494306d7f277631dc972a6e3))
+* simplify file path handling in JsonDatabase and server ([5938509](https://github.com/nhcuongng/FintBadmintonBot/commit/5938509ac1a340c5480e8acbad64af04476a5351))
+* update BOT_TOKEN to use secrets in CI/CD configuration ([2a725b7](https://github.com/nhcuongng/FintBadmintonBot/commit/2a725b7a3e0c8ec331dcce2e04f72f5a12e031f5))
+* update curl command to use environment variable for PORT ([f58a781](https://github.com/nhcuongng/FintBadmintonBot/commit/f58a781cac467335cb46895b0be2dee2a4a38af1))
+* update deployment configuration to use dynamic PORT variable ([2c6b6ef](https://github.com/nhcuongng/FintBadmintonBot/commit/2c6b6efce12df7929bff00eb6cac38dcc4a45aa0))
+* update Dockerfile to change ownership of built files and remove unused volume in Docker Compose ([5d341c9](https://github.com/nhcuongng/FintBadmintonBot/commit/5d341c9a2b4df485ec4fc74af93377c7a9e61c49))
+* update Dockerfile to create JSON directory and set ownership in final stage ([c6c3b28](https://github.com/nhcuongng/FintBadmintonBot/commit/c6c3b285dd18be754494b590d1c6715632641706))
+* update file paths to use ROOT_PATH for better maintainability and consistency ([a93d878](https://github.com/nhcuongng/FintBadmintonBot/commit/a93d878a51487423d94bc61e46face59fad50626))
+* update JSON directory paths in Dockerfile and Docker Compose configurations ([db472fa](https://github.com/nhcuongng/FintBadmintonBot/commit/db472fa205219c8ac5fd020f8936b8c9dec27994))
+* update ownership of JSON directory in Dockerfile and add volume for JSON data in Docker Compose ([eb3bb00](https://github.com/nhcuongng/FintBadmintonBot/commit/eb3bb00fdd7caf6dbfdee1d889e193def91c2c3a))
+* update volume definition for db-caulongbot in Docker Compose configuration ([a506d39](https://github.com/nhcuongng/FintBadmintonBot/commit/a506d39b5db3f725e0c23a0fd7a376472d8bf6ce))
+* update volume path in Docker Compose configuration ([f095376](https://github.com/nhcuongng/FintBadmintonBot/commit/f0953768d5261af793f8cb6345ed58483c877700))
+* update volume permissions in Docker Compose and correct file path in JsonDatabase ([027bab5](https://github.com/nhcuongng/FintBadmintonBot/commit/027bab5087c0a692937f5a27d30d1d89f932db05))
+
+
+### Features
+
+* add Docker support with CI/CD configuration and Dockerfile ([ba23dbb](https://github.com/nhcuongng/FintBadmintonBot/commit/ba23dbbc508c430665bacae1546920b54f3fb584))
+
 ## [1.3.2](https://github.com/nhcuongng/FintBadmintonBot/compare/v1.3.1...v1.3.2) (2025-10-20)
 
 
