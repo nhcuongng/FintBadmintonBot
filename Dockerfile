@@ -53,8 +53,6 @@ RUN npm run build
 # where the necessary files are copied from the build stage.
 FROM base AS final
 
-
-
 # Use production node environment by default.
 ENV NODE_ENV=production
 
