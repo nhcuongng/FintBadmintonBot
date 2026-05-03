@@ -1,8 +1,9 @@
 const fs = require('fs');
 const path = require('path');
+const ROOT_PATH = require('../utils/db');
 
 class JsonDatabase {
-    #urlPath = './db/chat.json';
+    #urlPath = `${ROOT_PATH}/chat.json`;
 
     constructor(filePath) {
         if (filePath) {
@@ -11,7 +12,7 @@ class JsonDatabase {
     }
 
     setFilePath(urlPath) {
-        this.#urlPath = `./db/${urlPath}.json`;
+        this.#urlPath = `${ROOT_PATH}/${urlPath}.json`;
     }
 
     readData() {
