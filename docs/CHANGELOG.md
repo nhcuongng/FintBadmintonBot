@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/nhcuongng/FintBadmintonBot/compare/v1.4.1...v1.5.0) (2026-05-07)
+
+
+### Features
+
+* use release workflow instead of cicd.yml ([#36](https://github.com/nhcuongng/FintBadmintonBot/issues/36)) ([7200d09](https://github.com/nhcuongng/FintBadmintonBot/commit/7200d099474cf0d1598bf3a871bd626131a56e32))
+
 ## [1.4.1](https://github.com/nhcuongng/FintBadmintonBot/compare/v1.4.0...v1.4.1) (2026-05-03)
 
 
