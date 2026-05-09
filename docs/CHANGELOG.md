@@ -1,3 +1,18 @@
+# [1.6.0](https://github.com/nhcuongng/FintBadmintonBot/compare/v1.5.0...v1.6.0) (2026-05-09)
+
+
+### Bug Fixes
+
+* add feat/docker branch with alpha prerelease to semantic-release configuration ([0658e1f](https://github.com/nhcuongng/FintBadmintonBot/commit/0658e1fdbae37e076acb1b1949996cf2b4cde0ff))
+* update CI/CD workflows and add semantic-release-export-data dependency ([4f47f07](https://github.com/nhcuongng/FintBadmintonBot/commit/4f47f07d6d3b3b73a6ac764d15bd5e6e9dab0e2e))
+* update Dockerfile and Docker Compose to improve file ownership and add container name ([5bcb8b8](https://github.com/nhcuongng/FintBadmintonBot/commit/5bcb8b8aea26ec94a931eadbc4fd2115ff7d4606))
+* update release workflow to deploy from main branch and enhance Docker integration ([5334849](https://github.com/nhcuongng/FintBadmintonBot/commit/5334849f707cf54a0d957590877e0f4172c085fc))
+
+
+### Features
+
+* use release workflow instead of cicd.yml ([a2d3d87](https://github.com/nhcuongng/FintBadmintonBot/commit/a2d3d875f2f49a2f59d36577afd00d656ff6f60f))
+
 # [1.5.0](https://github.com/nhcuongng/FintBadmintonBot/compare/v1.4.1...v1.5.0) (2026-05-07)
 
 
