@@ -9,6 +9,7 @@
 # https://github.com/docker/awesome-compose
 services:
   cau-long-bot:
+    container_name: cau-long-bot
     build:
       context: .
       args:
