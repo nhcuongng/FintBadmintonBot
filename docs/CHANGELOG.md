@@ -1,3 +1,10 @@
+## [1.6.1](https://github.com/nhcuongng/FintBadmintonBot/compare/v1.6.0...v1.6.1) (2026-05-09)
+
+
+### Bug Fixes
+
+* update Docker Compose to set container name and modify startup command ([841c103](https://github.com/nhcuongng/FintBadmintonBot/commit/841c10326573888dc92ff638d7bf20b3925ad2a5))
+
 # [1.6.0](https://github.com/nhcuongng/FintBadmintonBot/compare/v1.5.0...v1.6.0) (2026-05-09)
 
 
