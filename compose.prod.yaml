@@ -10,6 +10,7 @@
 services:
   cau-long-bot:
     image: nhcuong/cau-long-bot:${TAG:-latest}
+    container_name: cau-long-bot
     environment:
       -NODE_ENV: production
       -PORT: $PORT
