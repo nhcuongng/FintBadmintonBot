@@ -93,7 +93,8 @@ jobs:
           labels: |
             ${{ steps.meta.outputs.labels }}
             nhcuong/cau-long-bot:${{ needs.release.outputs.new-release-version }}
-
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
       - name: Copy docker compose
         if: github.ref == 'refs/heads/main'
         uses: appleboy/scp-action@v0.1.7
@@ -140,4 +141,5 @@ jobs:
             docker image prune -af  # Xóa image cũ để tiết kiệm ổ cứng VPS
 
             sleep 10
+            # name: Restart cron job
             curl -f http://localhost:${PORT}/restart-cron || exit 1
