@@ -1,3 +1,10 @@
+## [1.6.2](https://github.com/nhcuongng/FintBadmintonBot/compare/v1.6.1...v1.6.2) (2026-05-10)
+
+
+### Bug Fixes
+
+* enhance Docker build caching and add cron job restart step ([4e308dd](https://github.com/nhcuongng/FintBadmintonBot/commit/4e308dd65a3b20731860f64670141b9579c9b4bb))
+
 ## [1.6.1](https://github.com/nhcuongng/FintBadmintonBot/compare/v1.6.0...v1.6.1) (2026-05-09)
 
 
