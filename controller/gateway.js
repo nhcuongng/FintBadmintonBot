@@ -4,7 +4,11 @@ class Gateway {
     subject = {};
 
     dbKey(chatId, threadId) {
-        return `${chatId}_${threadId}`;
+        if (threadId) {
+            return `${chatId}_${threadId}`;
+        } else {
+            return chatId;
+        }
     }
 
     objectKey(ctx) {
