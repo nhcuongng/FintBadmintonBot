@@ -1,3 +1,10 @@
+## [1.6.3](https://github.com/nhcuongng/FintBadmintonBot/compare/v1.6.2...v1.6.3) (2026-10-22)
+
+
+### Bug Fixes
+
+* chat id ([1217e9d](https://github.com/nhcuongng/FintBadmintonBot/commit/1217e9d2681023a40578fbca53f3c8890b96f11f))
+
 ## [1.6.2](https://github.com/nhcuongng/FintBadmintonBot/compare/v1.6.1...v1.6.2) (2026-05-10)
 
 
